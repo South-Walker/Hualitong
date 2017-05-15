@@ -25,6 +25,12 @@ namespace WeChatMVC
                 defaults: new { controller = "api", action = "action", id = UrlParameter.Optional },
                 constraints: new { studentnum = @"\d*" }
                 );
+
+            routes.MapRoute(
+                name: "FileUpLoad",
+                url: "fileuploada/{action}",
+                defaults: new { controller = "fileupload", action = "index", id = UrlParameter.Optional }
+                );
         }
     }
 }
