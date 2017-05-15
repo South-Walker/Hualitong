@@ -12,7 +12,16 @@
     <script src="~/Scripts/webuploader.nolog.min.js"></script>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <script src="~/Scripts/bootstrap.min.js"></script>
-
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+            border: none;
+        }
+    num.input{
+        width:400px;
+    }
+    </style>
     <script type="text/javascript">
         $(function () {
             $list = $('#fileList');
@@ -92,6 +101,8 @@
                 $('#' + file.id).find('p.state').text('已上传');
                 $('#' + file.id).find(".progress").find(".progress-bar").attr("class", "progress-bar progress-bar-success");
                 $('#' + file.id).find(".info").find('.btn').fadeOut('slow');//上传完后删除"删除"按钮
+                var psel = document.getElementById("myfilename");
+                psel.value = file.name; //设置  
             });
 
             uploader.on('uploadError', function (file) {
@@ -148,21 +159,51 @@
     </script>
 </head>
 <body>
+
+
     <div class="container" style="margin-top: 50px">
-        <div id="uploader" class="container">
-            <div class="container">
-                <div id="fileList" class="uploader-list"></div> <!--存放文件的容器-->
-            </div>
-            <div class="btns container">
-                <div id="picker" class="webuploader-container" style="float: left; margin-right: 10px">
-                    <div>
-                        选择文件
-                        <input type="file" name="file" class="webuploader-element-invisible" multiple="multiple">
+
+        <form role="form" method="post">
+            <div id="uploader" class="container">
+                <div class="container">
+                    <div id="fileList" class="uploader-list"></div> <!--存放文件的容器-->
+                </div>
+                <div class="form-group">
+                    <div class="btns container">
+                        <div id="picker" class="webuploader-container" style="float: left; margin-right: 10px">
+                            <div>
+                                选择文件
+                                <input type="file" name="file" class="webuploader-element-invisible" multiple="multiple">
+                            </div>
+                        </div>
+                        <div id="UploadBtn" class="webuploader-pick" style="float: left">开始上传</div>
+                        <p class="help-block">上传的文件请小于50M</p>
                     </div>
                 </div>
-                <div id="UploadBtn" class="webuploader-pick" style="float: left">开始上传</div>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="name">打印份数：</label>
+                <input type="text" name="num" class="form-control" id="num" placeholder="要打印多少份？" style="width:120px;">
+            </div>
+            <div class="form-group">
+                <label for="name">联系方式：</label>
+                <input type="text" class="form-control" id="tele" placeholder="请输入联系方式">
+                <p class="help-block">打印好了我们联系你</p>
+            </div>
+            <div class="form-group">
+                <label for="name">地址：</label>
+                <input type="text" class="form-control" id="address" placeholder="请输入您的宿舍地址">
+                <p class="help-block">我们可能会有上门服务</p>
+            </div>
+            <div class="form-group">
+                <label for="name">特殊说明：</label>
+                <input type="text" class="form-control" id="desc" placeholder="有什么特殊需求吗？">
+            </div>
+            <button type="submit" class="btn btn-info" >提交</button>
+            <p class="help-block">当然，您要记得上传打印文件</p>
+            <input type="text" id="myfilename" name="myfilename" style="display:none"/>
+</form>
+
     </div>
 </body>
 </html>
