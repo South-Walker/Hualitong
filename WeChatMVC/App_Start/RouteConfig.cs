@@ -12,7 +12,7 @@ namespace WeChatMVC
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+            routes.IgnoreRoute("Upload/{*filename}");
             routes.MapRoute(
                 name: "WeChat",
                 url: "wechat/{action}/{id}",
