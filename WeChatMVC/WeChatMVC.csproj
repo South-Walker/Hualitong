@@ -111,6 +111,8 @@
     <Content Include="Views\Home\firstView.cshtml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
     <Content Include="Views\FileUpload\IndexView.cshtml" />
+    <Content Include="Views\FileUpload\ErrorView.cshtml" />
+    <Content Include="Views\FileUpload\PayView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

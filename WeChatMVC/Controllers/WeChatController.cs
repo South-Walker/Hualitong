@@ -18,6 +18,7 @@ namespace WeChatMVC.Controllers
 {
     public class WeChatController : Controller
     {
+        static UserRequest userrequest;
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
@@ -25,8 +26,22 @@ namespace WeChatMVC.Controllers
             {
                 if (Request.HttpMethod == "POST")
                 {
-                    UserRequest test = new UserRequest(Request.InputStream);
-                    return test.Get_Reply("test");
+                    userrequest = new UserRequest(Request.InputStream);
+                    if (userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw") 
+                    {
+                        Task printtask = new Task();
+                        if (printtask.filename == "")
+                            return userrequest.Get_Reply(printtask.errorstate);
+                        string reply = "用户上传的文件地址：" + @"http://119.23.56.207/upload/" + printtask.filename + "\r\n" +
+                            "打印的份数：" + printtask.num + "\r\n" +
+                            "用户的联系方式：" + printtask.tele + "\r\n" +
+                            "用户下单时间：" + printtask.date + "\r\n" +
+                            "用户的地址：" + printtask.address + "\r\n" +
+                            "用户留言：" + printtask.msg;
+
+                        return userrequest.Get_Reply(reply);
+                    }
+                    return userrequest.Get_Reply("test");
                 }
             }
             return "Don't touch this server,guy";
@@ -53,7 +68,7 @@ namespace WeChatMVC.Controllers
             }
         }//信息来源是腾讯才会返回true
     }
-
+    
     public class UserRequest
     {
         /*

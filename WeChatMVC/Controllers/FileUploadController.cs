@@ -69,14 +69,34 @@ namespace WeChatMVC.Controllers
             return View("IndexView");
         }
         [HttpPost]
-        public string Index(FormCollection c)
+        public ActionResult Index(FormCollection c)
         {
-            Task test = new Task(c, TempData["filename"].ToString());
-            test.Save_Xml();
-            if (test.errorstate == "")
-                return "订单上传成功！";
-            else
-                return test.errorstate;
+            try
+            {
+                Task task = new Task(c, TempData["filename"].ToString());
+                task.Save_Xml();
+                if (task.errorstate == "")
+                {
+                    double money = Convert.ToDouble(task.num) * Convert.ToDouble(task.pernum) * 0.4;
+                    ViewData["money"] = "按照您输入的数据，您一共需支付" + money.ToString() + "元";
+                    return View("PayView");
+                }
+                else
+                {
+                    ViewData["errorstate"] = task.errorstate;
+                    return View("ErrorView");
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                ViewData["errorstate"] = "这个文件类型，不允许哦";
+                return View("ErrorView");
+            }
+            catch
+            {
+                ViewData["errorstate"] = "没有文件上传！（当然也可能是别的错误）";
+                return View("ErrorView");
+            }
         }
         public ActionResult FileUp(string id, string name, string type, string lastModifiedDate, int size, HttpPostedFileBase file)
         {
@@ -103,22 +123,32 @@ namespace WeChatMVC.Controllers
                 return Json(new { error = true });
             }
             string ex = Path.GetExtension(file.FileName);
-            fileFullName = Guid.NewGuid().ToString("N") + ex;
-            TempData["filename"] = fileFullName;
-            //也可以根据需要抽取到FileBaseController里面
-            if (!SaveFile(localPath, fileFullName, file))
+            ex = ex.ToLower();
+            Regex re = new Regex(@"png|jpg|jpeg|docx|doc|pdf$");
+            if (!re.IsMatch(ex))
             {
-                return Json(new { error = true });
+                ViewData["errorstate"] = "这个文件类型，不行哦";
+                return View("ErrorView");
             }
             else
             {
-                
-                return Json(new
+                fileFullName = Guid.NewGuid().ToString("N") + ex;
+                TempData["filename"] = fileFullName;
+                //也可以根据需要抽取到FileBaseController里面
+                if (!SaveFile(localPath, fileFullName, file))
                 {
-                    jsonrpc = "2.0",
-                    id = id,
-                    filePath = "/Upload/" + fileFullName
-                });
+                    return Json(new { error = true });
+                }
+                else
+                {
+
+                    return Json(new
+                    {
+                        jsonrpc = "2.0",
+                        id = id,
+                        filePath = "/Upload/" + fileFullName
+                    });
+                }
             }
         }
     }
@@ -130,18 +160,68 @@ namespace WeChatMVC.Controllers
         public string tele = "17077706886";
         public string address = "12-410";
         public string date = DateTime.Now.ToString(@"MMddyyyyHHmm");
-        public string filename;
+        public string pernum = "1";
+        public string filename = "";
         public string errorstate = "";
+        public Task()
+        {
+            bool haved = false;
+            XmlDocument xmldoc = new XmlDocument();
+            xmldoc.Load(path);
+            XmlElement xe = xmldoc.DocumentElement;
+            XmlNodeList xnl = xe.SelectNodes("task");
+            XmlNode xn = null;
+            for (int i = 0; i < xnl.Count; i++)
+            {
+                xn = xnl[i];
+                if (xn.SelectSingleNode("isused").InnerText == "0")
+                {
+                    haved = true;
+                    xn.SelectSingleNode("isused").InnerText = "1";
+                    break;
+                }
+            }
+            if (!haved) 
+            {
+                errorstate = "当前没有未读任务！";
+            }
+            else
+            {
+                pernum = xn.SelectSingleNode("pernum").InnerText;
+                num = xn.SelectSingleNode("num").InnerText;
+                msg = xn.SelectSingleNode("msg").InnerText;
+                tele = xn.SelectSingleNode("tele").InnerText;
+                address = xn.SelectSingleNode("address").InnerText;
+                date = xn.SelectSingleNode("date").InnerText;
+                filename = xn.SelectSingleNode("filename").InnerText;
+            }
+            xmldoc.Save(path);
+        }
         public Task(FormCollection c,string fullfilename)
         {
+            Regex re = new Regex(@"^\d*$");
             if (c["myfilename"] == "")
                 errorstate = "没上传文件啊，兄弟！";
             else
             {
                 filename = fullfilename;
             }
+            if (c["pernum"] != "")
+            {
+                pernum = c["pernum"];
+                if (!re.IsMatch(pernum))
+                {
+                    errorstate = "份数与张数请填一个具体的数字。";
+                }
+            }
             if (c["num"] != "")
+            {
                 num = c["num"];
+                if (!re.IsMatch(num))
+                {
+                    errorstate = "份数与张数请填一个具体的数字。";
+                }
+            }
             if (c["msg"] != "")
                 msg = c["msg"];
             if (c["tele"] != "")
@@ -155,7 +235,8 @@ namespace WeChatMVC.Controllers
             doc.Load(path);
             XmlElement root = doc.DocumentElement;
             XmlElement task = doc.CreateElement("task");
-
+            task.AppendChild(getNode(doc, "isused", "0"));
+            task.AppendChild(getNode(doc, "pernum", pernum));
             task.AppendChild(getNode(doc, "date", date));
             task.AppendChild(getNode(doc, "filename", filename));
             task.AppendChild(getNode(doc, "num", num));
