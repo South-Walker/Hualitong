@@ -87,11 +87,6 @@ namespace WeChatMVC.Controllers
                     return View("ErrorView");
                 }
             }
-            catch (NullReferenceException e)
-            {
-                ViewData["errorstate"] = "这个文件类型，不允许哦";
-                return View("ErrorView");
-            }
             catch
             {
                 ViewData["errorstate"] = "没有文件上传！（当然也可能是别的错误）";
@@ -114,7 +109,7 @@ namespace WeChatMVC.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                string thisDir = System.IO.Directory.GetCurrentDirectory();
+                string thisDir = Directory.GetCurrentDirectory();
                 int cutIndex = thisDir.LastIndexOf("FileUpload.Tests");
                 localPath = thisDir.Substring(0, cutIndex) + "FileUpload\\Upload";
             }
@@ -125,41 +120,37 @@ namespace WeChatMVC.Controllers
             string ex = Path.GetExtension(file.FileName);
             ex = ex.ToLower();
             Regex re = new Regex(@"png|jpg|jpeg|docx|doc|pdf$");
-            if (!re.IsMatch(ex))
+            if (!re.IsMatch(ex) || !Regex.IsMatch(file.FileName, "."))  
             {
                 ViewData["errorstate"] = "这个文件类型，不行哦";
-                return View("ErrorView");
+            }
+            fileFullName = Guid.NewGuid().ToString("N") + ex;
+            TempData["filename"] = fileFullName;
+            //也可以根据需要抽取到FileBaseController里面
+            if (!SaveFile(localPath, fileFullName, file))
+            {
+                return Json(new { error = true });
             }
             else
             {
-                fileFullName = Guid.NewGuid().ToString("N") + ex;
-                TempData["filename"] = fileFullName;
-                //也可以根据需要抽取到FileBaseController里面
-                if (!SaveFile(localPath, fileFullName, file))
-                {
-                    return Json(new { error = true });
-                }
-                else
-                {
 
-                    return Json(new
-                    {
-                        jsonrpc = "2.0",
-                        id = id,
-                        filePath = "/Upload/" + fileFullName
-                    });
-                }
+                return Json(new
+                {
+                    jsonrpc = "2.0",
+                    id = id,
+                    filePath = "/Upload/" + fileFullName
+                });
             }
         }
     }
-    class Task : FileUploadController
+    public class Task : FileUploadController
     {
         public static string path = @"C:\Users\Administrator\Desktop\task.xml";
         public string num = "1";
         public string msg = "无";
         public string tele = "17077706886";
         public string address = "12-410";
-        public string date = DateTime.Now.ToString(@"MMddyyyyHHmm");
+        public string date = DateTime.Now.ToString(@"yyyyMMddHHmm");
         public string pernum = "1";
         public string filename = "";
         public string errorstate = "";

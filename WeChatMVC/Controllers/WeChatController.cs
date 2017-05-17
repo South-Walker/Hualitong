@@ -22,29 +22,20 @@ namespace WeChatMVC.Controllers
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
-            if(checkSignature())
+            if (checkSignature() && Request.HttpMethod == "POST")//确认是腾讯发来
             {
-                if (Request.HttpMethod == "POST")
+                userrequest = new UserRequest(Request.InputStream);
+                if (userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o") 
                 {
-                    userrequest = new UserRequest(Request.InputStream);
-                    if (userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw") 
-                    {
-                        Task printtask = new Task();
-                        if (printtask.filename == "")
-                            return userrequest.Get_Reply(printtask.errorstate);
-                        string reply = "用户上传的文件地址：" + @"http://119.23.56.207/upload/" + printtask.filename + "\r\n" +
-                            "打印的份数：" + printtask.num + "\r\n" +
-                            "用户的联系方式：" + printtask.tele + "\r\n" +
-                            "用户下单时间：" + printtask.date + "\r\n" +
-                            "用户的地址：" + printtask.address + "\r\n" +
-                            "用户留言：" + printtask.msg;
-
-                        return userrequest.Get_Reply(reply);
-                    }
-                    return userrequest.Get_Reply("test");
+                    Task printtask = new Task();
+                    return userrequest.Get_Printer_Administrator_Reply(printtask);
                 }
+                return userrequest.Get_Reply("test");
             }
-            return "Don't touch this server,guy";
+            else//不是腾讯发来的post
+            {
+                return "Don't touch this server,guy";
+            }
         }
 
         public bool checkSignature()
@@ -148,6 +139,19 @@ namespace WeChatMVC.Controllers
         private string get_urlEncode(string input)
         {
             return HttpUtility.UrlEncode(input);
+        }
+        public string Get_Printer_Administrator_Reply(Task printertask)
+        {
+            if (printertask.filename == "")
+                return Get_Reply(printertask.errorstate);
+            string reply = "用户上传的文件地址：" + @"http://119.23.56.207/upload/" + printertask.filename + "\r\n" +
+                "打印的份数：" + printertask.num + "\r\n" +
+                "用户的联系方式：" + printertask.tele + "\r\n" +
+                "用户下单时间：" + printertask.date + "\r\n" +
+                "用户的地址：" + printertask.address + "\r\n" +
+                "用户留言：" + printertask.msg;
+
+            return Get_Reply(reply);
         }
         public string Get_Link_Reply(string url, string text) 
         {
