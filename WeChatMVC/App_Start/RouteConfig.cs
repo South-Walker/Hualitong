@@ -20,6 +20,12 @@ namespace WeChatMVC
             );
 
             routes.MapRoute(
+                name: "Binding",
+                url: "Binding/{action}",
+                defaults: new { controller = "binding", id = UrlParameter.Optional }
+                );
+
+            routes.MapRoute(
                 name: "useAPI",
                 url: "api/{action}/{studentnum}/{pwd}",
                 defaults: new { controller = "api", id = UrlParameter.Optional },

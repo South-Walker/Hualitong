@@ -16,16 +16,26 @@ using System.Web.Mvc;
 
 namespace WeChatMVC.Controllers
 {
-    public class WeChatController : Controller
+    public class WeChatController : BaseController
     {
         static UserRequest userrequest;
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
-            if (checkSignature() && Request.HttpMethod == "POST")//确认是腾讯发来
+            if (IsFromTencent() && Request.HttpMethod == "POST")//确认是腾讯发来
             {
                 userrequest = new UserRequest(Request.InputStream);
-                if (userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o") 
+                if (userrequest.Content == "422")
+                {
+                    if (Have_PWD()) ;//待做，这里要返回一个url
+                    else
+                    {
+                        string MD5 = MD5Encrypter(userrequest.FromUserName);
+                        string binding = string.Format(@"http://119.23.56.207/binding?openid={0}&secret={1}", userrequest.FromUserName, MD5);
+                        return userrequest.Get_Link_Reply(binding, "请先绑定你的学号与密码");
+                    }
+                }
+                if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")
                 {
                     Task printtask = new Task();
                     return userrequest.Get_Printer_Administrator_Reply(printtask);
@@ -37,8 +47,12 @@ namespace WeChatMVC.Controllers
                 return "Don't touch this server,guy";
             }
         }
-
-        public bool checkSignature()
+        
+        public bool Have_PWD()//待完成，用来检验用户是否已经填写了密码
+        {
+            return false;
+        }
+        public bool IsFromTencent()
         {
             var signature = Request["signature"];
             var timestamp = Request["timestamp"];
@@ -144,13 +158,24 @@ namespace WeChatMVC.Controllers
         {
             if (printertask.filename == "")
                 return Get_Reply(printertask.errorstate);
+            string server = (printertask.is_outdoor) ? "送货上门" : "自取";
+            /*
             string reply = "用户上传的文件地址：" + @"http://119.23.56.207/upload/" + printertask.filename + "\r\n" +
                 "打印的份数：" + printertask.num + "\r\n" +
+                "一份有：" + printertask.pernum + "张\r\n" +
+                "他应该付" + printertask.sum + "元\r\n" +
                 "用户的联系方式：" + printertask.tele + "\r\n" +
                 "用户下单时间：" + printertask.date + "\r\n" +
                 "用户的地址：" + printertask.address + "\r\n" +
-                "用户留言：" + printertask.msg;
-
+                "用户留言：" + printertask.msg + "\r\n" +
+                "他要求：" + server;*/
+            string reply = string.Format(
+                "用户上传的文件地址： http://119.23.56.207/upload/{0} \r\n打印的份数：{1}\r\n一份有：{2}张\r\n他应该付：{3}元\r\n用户的联系方式：{4}\r\n用户的下单时间：{5}\r\n用户的地址：{6}\r\n用户留言：{7}\r\n他要求：{8}"
+                , printertask.filename, printertask.num
+                , printertask.pernum, printertask.sum
+                , printertask.tele, printertask.date
+                , printertask.address, printertask.msg
+                , server);
             return Get_Reply(reply);
         }
         public string Get_Link_Reply(string url, string text) 

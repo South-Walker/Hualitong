@@ -17,7 +17,7 @@ using System.Text.RegularExpressions;
 namespace WeChatMVC.Controllers
 {
 
-    public class FileBaseController : Controller
+    public class FileBaseController : BaseController
     {
         /// <summary>
         /// 保存文件的共用方法
@@ -77,8 +77,7 @@ namespace WeChatMVC.Controllers
                 task.Save_Xml();
                 if (task.errorstate == "")
                 {
-                    double money = Convert.ToDouble(task.num) * Convert.ToDouble(task.pernum) * 0.4;
-                    ViewData["money"] = "按照您输入的数据，您一共需支付" + money.ToString() + "元";
+                    ViewData["money"] = "按照您输入的数据，您一共需支付" + task.sum + "元";
                     return View("PayView");
                 }
                 else
@@ -154,6 +153,8 @@ namespace WeChatMVC.Controllers
         public string pernum = "1";
         public string filename = "";
         public string errorstate = "";
+        public double sum = 0;
+        public bool is_outdoor = false;
         public Task()
         {
             bool haved = false;
@@ -180,11 +181,15 @@ namespace WeChatMVC.Controllers
             {
                 pernum = xn.SelectSingleNode("pernum").InnerText;
                 num = xn.SelectSingleNode("num").InnerText;
+                pernum = xn.SelectSingleNode("pernum").InnerText;
+                sum = Convert.ToDouble(xn.SelectSingleNode("sum").InnerText);
+                is_outdoor = Convert.ToBoolean(xn.SelectSingleNode("is_outdoor").InnerText);
                 msg = xn.SelectSingleNode("msg").InnerText;
                 tele = xn.SelectSingleNode("tele").InnerText;
                 address = xn.SelectSingleNode("address").InnerText;
                 date = xn.SelectSingleNode("date").InnerText;
                 filename = xn.SelectSingleNode("filename").InnerText;
+                
             }
             xmldoc.Save(path);
         }
@@ -219,6 +224,20 @@ namespace WeChatMVC.Controllers
                 tele = c["tele"];
             if (c["address"] != "")
                 address = c["address"];
+            if (errorstate == "")
+            {
+                sum = Convert.ToDouble(num) * Convert.ToDouble(pernum);
+                if (c["server"] == "outdoorserver")
+                {
+                    sum = sum * 0.6;
+                    is_outdoor = true;
+                }
+                else
+                {
+                    sum = sum * 0.3;
+                    is_outdoor = false;
+                }
+            }
         }
         public void Save_Xml()
         {
@@ -234,6 +253,8 @@ namespace WeChatMVC.Controllers
             task.AppendChild(getNode(doc, "msg", msg));
             task.AppendChild(getNode(doc, "tele", tele));
             task.AppendChild(getNode(doc, "address", address));
+            task.AppendChild(getNode(doc, "is_outdoor", is_outdoor.ToString()));
+            task.AppendChild(getNode(doc, "sum", sum.ToString()));
             root.AppendChild(task);
             doc.Save(path);
         }

@@ -97,8 +97,9 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\APIController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BindingController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WeChatController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -108,11 +109,12 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
-    <Content Include="Views\Home\firstView.cshtml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />
     <Content Include="Views\FileUpload\IndexView.cshtml" />
     <Content Include="Views\FileUpload\ErrorView.cshtml" />
     <Content Include="Views\FileUpload\PayView.cshtml" />
+    <Content Include="Views\Binding\BindingStudentNumView.cshtml" />
+    <Content Include="Views\Binding\BindingElseView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

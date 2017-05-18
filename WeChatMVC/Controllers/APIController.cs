@@ -65,7 +65,7 @@ namespace WeChatMVC.Controllers
             return html;
         }
     }
-    public class APIController : Controller
+    public class APIController : BaseController
     {
         // GET: API
         public string ty(string studentnum, string pwd)

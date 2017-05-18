@@ -102,7 +102,7 @@
                 $('#' + file.id).find(".progress").find(".progress-bar").attr("class", "progress-bar progress-bar-success");
                 $('#' + file.id).find(".info").find('.btn').fadeOut('slow');//上传完后删除"删除"按钮
                 var psel = document.getElementById("myfilename");
-                psel.value = file.name; //设置  
+                psel.value = file.name; //设置
             });
 
             uploader.on('uploadError', function (file) {
@@ -154,8 +154,17 @@
 
         });
 
-
-
+        function changeserver()
+        {
+            if (document.getElementById("outdoorserver").checked == false)     //判断单选框此时状态为未选agreement为单选框id
+            {
+                document.getElementById("addressdiv").style.display = "none";   //显示不可用按钮
+            }
+            else        //判断单选框此时状态为已选
+            {
+                document.getElementById("addressdiv").style.display = "inline";
+            }
+        }
     </script>
 </head>
 <body>
@@ -194,7 +203,17 @@
                     <input type="text" name="tele" class="form-control" id="tele" placeholder="请输入联系方式">
                     <p class="help-block">打印好了我们联系你</p>
                 </div>
-                <div class="form-group">
+
+            <label for="name">您想我们提供上门服务吗？</label>
+            <div>
+            <label class="checkbox-inline">
+                <input type="radio" name="server" id="outdoorserver" value="outdoorserver" onchange="changeserver()" checked>我是土豪，请上门（一张六毛）
+            </label>
+            <label class="checkbox-inline">
+                <input type="radio" name="server" id="houseserver" value="houseserver" onchange="changeserver()" >我自己来（一张三毛）
+            </label>
+                </div>
+                <div class="form-group" id="addressdiv">
                     <label for="name">地址：</label>
                     <input type="text" name="address" class="form-control" id="address" placeholder="请输入您的宿舍地址">
                     <p class="help-block">我们可能会有上门服务</p>
@@ -206,6 +225,7 @@
                 <button type="submit" class="btn btn-info">提交</button>
                 <p class="help-block">当然，您要记得上传打印文件</p>
                     <input type="text" id="myfilename" name="myfilename" style="display:none" />
+
 </form>
 
     </div>
@@ -218,7 +238,6 @@
                 <ul>
                     <li>designed by <a href="https://github.com/South-Walker">South-Walker</a></li>
                     <li>you can call us at 17077706886</li>
-                    <li>我们每张收费四毛钱，谢谢</li>
                 </ul>
             </div>
             <div class="col-md-3">
