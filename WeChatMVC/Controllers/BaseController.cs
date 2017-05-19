@@ -13,6 +13,7 @@ using System.Data;
 using System.Web.Security;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using Aliyun.MNS.Model;
 
 namespace WeChatMVC.Controllers
 {
@@ -33,5 +34,38 @@ namespace WeChatMVC.Controllers
             }
             return output;
         } //通用MD5加密
+        public void SendSMS(string telenum)
+        {
+            string _endpoint = "https://1076168149508929.mns.cn-shenzhen.aliyuncs.com/"; // eg. http://1234567890123456.mns.cn-shenzhen.aliyuncs.com
+            string _accessKeyId = "LTAI9KVo5A2RNmaQ";
+            string _secretAccessKey = "Ok64W1hAs6tPs3FUC6pOWjnqApvPhW";
+            string _topicName = "printer";
+            string _freesignname = "410打印店";
+            string _templatecode = "SMS_67201137";
+            Aliyun.MNS.IMNS client = new Aliyun.MNS.MNSClient(_accessKeyId, _secretAccessKey, _endpoint);
+            Aliyun.MNS.Topic topic = client.GetNativeTopic(_topicName);
+            BatchSmsAttributes batchsmsattributes = new BatchSmsAttributes();
+            MessageAttributes messageattributes = new MessageAttributes();
+
+            batchsmsattributes.FreeSignName = _freesignname;
+            batchsmsattributes.TemplateCode = _templatecode;
+            Dictionary<string, string> param = new Dictionary<string, string>();
+
+            batchsmsattributes.AddReceiver(telenum, param);
+            messageattributes.BatchSmsAttributes = batchsmsattributes;
+
+            PublishMessageRequest request = new PublishMessageRequest();
+            request.MessageAttributes = messageattributes;
+
+            request.MessageBody = "not null";
+
+            try
+            {
+                PublishMessageResponse resp = topic.PublishMessage(request);
+            }
+            catch
+            {
+            }
+        }//发送短信通知
     }
 }

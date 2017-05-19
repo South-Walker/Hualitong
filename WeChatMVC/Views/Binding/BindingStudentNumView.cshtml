@@ -14,9 +14,66 @@
     <script src="~/Scripts/webuploader.nolog.min.js"></script>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <script src="~/Scripts/bootstrap.min.js"></script>
+    <script language="javascript">
+        function wouldsubmit() {
+            if(!document.substudentnum.studentnum.value)
+            {
+                return false;
+            }
+            else if(!document.substudentnum.studentnum.value)
+            {
+                return false;
+            }
+            else
+            {
+                location.href = "#modal-container-282122"
+            }
+        }
+    </script>
 </head>
 <body>
     <div> 
-    </div>
+
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6">
+            <form name="substudentnum" method="post">
+                <div class="form-group">
+                    <label for="name">绑定学号：</label>
+                    <input type="text" name="studentnum" class="form-control" id="studentnum" placeholder="请输入要绑定的学号">
+                    <p class="help-block">学号一旦绑定，不可更改</p>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="studentnum" class="form-control" id="studentnum" placeholder="请重复一次">
+                </div>
+                <div class="theme-buy">
+                <a id="modal-282122" class="btn btn-primary btn-large theme-login" role="button" href="#modal-container-282122" data-toggle="modal">提交</a>
+                    </div>
+
+                <div class="modal fade" id="modal-container-282122" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    确定提交
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                学号一旦绑定，不可更改
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-info">提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+        </div>
+    <div class="col-md-3">
+        </div>
 </body>
 </html>

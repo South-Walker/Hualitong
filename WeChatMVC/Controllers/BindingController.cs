@@ -23,7 +23,7 @@ namespace WeChatMVC.Controllers
         {
             string openid = Request.QueryString["openid"];
             string secret = Request.QueryString["secret"];
-            if (secret == MD5Encrypter(openid))
+            if (false)//secret == MD5Encrypter(openid))
             {
                 return View("BindingElseView");
             }
