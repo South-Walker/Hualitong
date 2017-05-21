@@ -27,7 +27,7 @@ namespace WeChatMVC.Controllers
                 userrequest = new UserRequest(Request.InputStream);
                 if (userrequest.Content == "422")
                 {
-                    if (Have_PWD()) ;//待做，这里要返回一个url
+                    if (userrequest.Have_PWD()) ;//待做，这里要返回一个url
                     else
                     {
                         string MD5 = MD5Encrypter(userrequest.FromUserName);
@@ -48,10 +48,6 @@ namespace WeChatMVC.Controllers
             }
         }
         
-        public bool Have_PWD()//待完成，用来检验用户是否已经填写了密码
-        {
-            return false;
-        }
         public bool IsFromTencent()
         {
             var signature = Request["signature"];
@@ -91,6 +87,10 @@ namespace WeChatMVC.Controllers
         {
             XmlElement xe = doc.DocumentElement;
             fillclass(xe);
+        }
+        public bool Have_PWD()//待完成，用来检验用户是否已经填写了密码
+        {
+            return false;
         }
         public UserRequest(string xml)
         {

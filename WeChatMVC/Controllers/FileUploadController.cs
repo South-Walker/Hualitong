@@ -79,8 +79,6 @@ namespace WeChatMVC.Controllers
                 {
                     ViewData["money"] = "按照您输入的数据，您一共需支付" + task.sum + "元";
                     SendSMS("17077706886");
-                    SendSMS("18616154823");
-                    SendSMS("15216602752");
                     return View("PayView");
                 }
                 else

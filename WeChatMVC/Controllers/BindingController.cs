@@ -19,6 +19,7 @@ namespace WeChatMVC.Controllers
     public class BindingController : BaseController
     {
         // GET: Binding
+        [HttpGet]
         public ActionResult Index()
         {
             string openid = Request.QueryString["openid"];
@@ -29,6 +30,11 @@ namespace WeChatMVC.Controllers
             }
             else
                 return View("BindingStudentNumView");
+        }
+        [HttpPost]
+        public string Index(FormCollection c)
+        {
+            return "success";
         }
     }
 }
