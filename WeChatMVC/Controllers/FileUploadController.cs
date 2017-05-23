@@ -33,9 +33,9 @@ namespace WeChatMVC.Controllers
                 return false;
             }
 
-            if (!System.IO.Directory.Exists(localPath))
+            if (!Directory.Exists(localPath))
             {
-                System.IO.Directory.CreateDirectory(localPath);
+                Directory.CreateDirectory(localPath);
             }
 
             try

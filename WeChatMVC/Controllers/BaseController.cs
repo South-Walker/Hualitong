@@ -23,8 +23,10 @@ namespace WeChatMVC.Controllers
         public static string MD5Encrypter(string input)
         {
             string token = "E58D8EE79086E9809AE5BEAEE4BFA1";
+            DateTime now = DateTime.Now;
+            string date = now.Year.ToString() + now.Month.ToString() + now.Day.ToString();
             MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] bytesinput = Encoding.UTF8.GetBytes(input + token);
+            byte[] bytesinput = Encoding.UTF8.GetBytes(input + token + date);
             byte[] bytesoutput = md5.ComputeHash(bytesinput);
 
             string output = "";

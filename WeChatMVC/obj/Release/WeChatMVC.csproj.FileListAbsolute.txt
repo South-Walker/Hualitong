@@ -37,5 +37,9 @@ C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\zh-Hans\System.Web.Mvc.re
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\obj\Release\WeChatMVC.csprojResolveAssemblyReference.cache
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\obj\Release\WeChatMVC.dll
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\obj\Release\WeChatMVC.pdb
-C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\Aliyun.MNS.dll
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\Aliyun.MNS.pdb
+C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.dll
+C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.SqlServer.dll
+C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.xml
+C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.SqlServer.xml
+C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\zh-Hans\EntityFramework.resources.dll

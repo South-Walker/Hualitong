@@ -20,7 +20,11 @@
             {
                 return false;
             }
-            else if(!document.substudentnum.studentnum.value)
+            else if(!document.substudentnum.restudentnum.value)
+            {
+                return false;
+            }
+            else if (document.substudentnum.restudentnum.value != document.substudentnum.studentnum.value)
             {
                 return false;
             }
@@ -37,17 +41,17 @@
         <div class="col-md-3">
         </div>
         <div class="col-md-6">
-            <form name="substudentnum" method="post">
+            <form name="substudentnum" method="post" action="binding/studentnum">
+
+                <input type="text" id="openid" name="openid" style="display:none" value="@ViewData["openid"]"/>
+                <input type="text" id="secret" name="secret" style="display:none" value="@ViewData["secret"]"/>
                 <div class="form-group">
                     <label for="name">绑定学号：</label>
                     <input type="text" name="studentnum" class="form-control" id="studentnum" placeholder="请输入要绑定的学号">
                     <p class="help-block">学号一旦绑定，不可更改</p>
                 </div>
-                <div class="form-group">
-                    <input type="text" name="studentnum" class="form-control" id="studentnum" placeholder="请重复一次">
-                </div>
                 <div class="theme-buy">
-                <a id="modal-282122" class="btn btn-primary btn-large theme-login" role="button" href="#modal-container-282122" data-toggle="modal">提交</a>
+                <a id="modal-282122" name="modal-282122" class="btn btn-primary btn-large theme-login" role="button" href="#modal-container-282122" data-toggle="modal">提交</a>
                     </div>
 
                 <div class="modal fade" id="modal-container-282122" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -63,7 +67,7 @@
                                 学号一旦绑定，不可更改
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-info">提交</button>
+                                <button type="submit" class="btn btn-info" >提交</button>
                             </div>
                         </div>
                     </div>

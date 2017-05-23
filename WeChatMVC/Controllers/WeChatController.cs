@@ -13,6 +13,7 @@ using System.Data;
 using System.Web.Security;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using WeChatMVC.Models;
 
 namespace WeChatMVC.Controllers
 {
@@ -22,17 +23,24 @@ namespace WeChatMVC.Controllers
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
-            if (IsFromTencent() && Request.HttpMethod == "POST")//确认是腾讯发来
+            if (IsFromTencent() && Request.HttpMethod == "POST")//确认是腾讯发来,debug前会在前面加上感叹号
             {
                 userrequest = new UserRequest(Request.InputStream);
                 if (userrequest.Content == "422")
                 {
-                    if (userrequest.Have_PWD()) ;//待做，这里要返回一个url
+                    int state_pwd = userrequest.Have_PWD(0);
+                    if (state_pwd == 1)  //待做，这里要返回一个url
+                    {
+                        return userrequest.Get_Reply("不好意思体育网站崩了");
+                    }
                     else
                     {
                         string MD5 = MD5Encrypter(userrequest.FromUserName);
                         string binding = string.Format(@"http://119.23.56.207/binding?openid={0}&secret={1}", userrequest.FromUserName, MD5);
-                        return userrequest.Get_Link_Reply(binding, "请先绑定你的学号与密码");
+                        if (state_pwd == 2)
+                            return userrequest.Get_Link_Reply(binding, "请先绑定你的密码，网址当天有效");
+                        else
+                            return userrequest.Get_Link_Reply(binding, "请先绑定你的学号，网址当天有效");
                     }
                 }
                 if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")
@@ -83,14 +91,43 @@ namespace WeChatMVC.Controllers
         public string MsgId;
         public string PicUrl;
         public string MediaId;
+        public fortest linqdbresult = null;//数据库完成后更改，这个只在调用Have_PWD方法后才会被赋值
+        public string studentid = null;//同上
+        public string ty_pwd = null;//同上
+        
         public UserRequest(XmlDocument doc)
         {
             XmlElement xe = doc.DocumentElement;
             fillclass(xe);
         }
-        public bool Have_PWD()//待完成，用来检验用户是否已经填写了密码
+        public int Have_PWD(int passwordcode)//待完成，用来检验用户是否已经填写了密码,在数据库完成后看看要不要改
         {
-            return false;
+            //这个查询在数据库正式完成后更改
+            LinqToDB ltdb = new LinqToDB();
+            var select = from t in ltdb.fortest
+                         where t.wechatid == FromUserName
+                         select t;
+            if (select.Count() == 0)//表明这条记录根本不存在
+                return 0;
+            linqdbresult = select.ToList()[0];
+            studentid = linqdbresult.studentnum;
+            ty_pwd = linqdbresult.ty_password;
+            //以上
+            int result = 2;
+            switch (passwordcode)
+            {
+                case 0:
+                    if (ty_pwd != null)
+                        result = 1;
+                    break;
+                case 1:
+
+                    break;
+                case 2:
+
+                    break;
+            }
+            return result;
         }
         public UserRequest(string xml)
         {
@@ -108,7 +145,7 @@ namespace WeChatMVC.Controllers
             XmlElement xe = xmldoc.DocumentElement;
             fillclass(xe);
         }
-        private void fillclass(XmlElement xe)
+        private void fillclass(XmlElement xe)//实例化的最后一步
         {
             ToUserName = xe.SelectSingleNode("ToUserName").InnerText;
             FromUserName = xe.SelectSingleNode("FromUserName").InnerText;
