@@ -48,7 +48,7 @@ namespace WeChatMVC.Controllers
         [HttpGet]
         public string Else()
         {
-            return "success";
+            return Welcome();
         }
         [HttpPost]
         public string Else(FormCollection c)

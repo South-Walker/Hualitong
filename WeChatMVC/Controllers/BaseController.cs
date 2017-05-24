@@ -69,5 +69,9 @@ namespace WeChatMVC.Controllers
             {
             }
         }//发送短信通知
+        public string Welcome()
+        {
+            return "Don't touch this server,guy";
+        }
     }
 }

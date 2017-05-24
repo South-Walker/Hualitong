@@ -28,7 +28,7 @@ namespace WeChatMVC.Controllers
                 userrequest = new UserRequest(Request.InputStream);
                 if (userrequest.Content == "422")
                 {
-                    int state_pwd = userrequest.Have_PWD(0);
+                    int state_pwd = userrequest.Get_UserstateInDB(0);
                     if (state_pwd == 1)  //待做，这里要返回一个url
                     {
                         return userrequest.Get_Reply("不好意思体育网站崩了");
@@ -43,11 +43,13 @@ namespace WeChatMVC.Controllers
                             return userrequest.Get_Link_Reply(binding, "请先绑定你的学号，网址当天有效");
                     }
                 }
+                #region print
                 if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")
                 {
                     Task printtask = new Task();
                     return userrequest.Get_Printer_Administrator_Reply(printtask);
                 }
+                #endregion
                 return userrequest.Get_Reply("test");
             }
             else//不是腾讯发来的post
@@ -100,7 +102,14 @@ namespace WeChatMVC.Controllers
             XmlElement xe = doc.DocumentElement;
             fillclass(xe);
         }
-        public int Have_PWD(int passwordcode)//待完成，用来检验用户是否已经填写了密码,在数据库完成后看看要不要改
+        /// <summary>
+        /// 返回的值中0表示用户没有绑定学号，
+        /// 1表示对应的密码存在，且同时对实例参数中对应的pwd赋值,
+        /// 2表示有学号记录但是没有对应的密码。
+        /// </summary>
+        /// <param name="passwordcode">暂时的，输入0表示查询体育状态</param>
+        /// <returns></returns>
+        public int Get_UserstateInDB(int passwordcode)//待完成，用来检验用户是否已经填写了密码,在数据库完成后看看要不要改
         {
             //这个查询在数据库正式完成后更改
             LinqToDB ltdb = new LinqToDB();
