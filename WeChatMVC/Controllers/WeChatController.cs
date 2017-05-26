@@ -23,24 +23,29 @@ namespace WeChatMVC.Controllers
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
-            if (IsFromTencent() && Request.HttpMethod == "POST")//确认是腾讯发来,debug前会在前面加上感叹号
+            if (IsFromTencent("961016") && Request.HttpMethod == "POST")//确认是腾讯发来,debug前会在前面加上感叹号
             {
                 userrequest = new UserRequest(Request.InputStream);
                 if (userrequest.Content == "422")
                 {
-                    int state_pwd = userrequest.Get_UserstateInDB(0);
-                    if (state_pwd == 1)  //待做，这里要返回一个url
+                    string state_pwd = userrequest.Get_UserstateInDB(0);
+                    if (state_pwd == "1")  //待做，这里要返回一个url
                     {
                         return userrequest.Get_Reply("不好意思体育网站崩了");
                     }
                     else
                     {
-                        string MD5 = MD5Encrypter(userrequest.FromUserName);
-                        string binding = string.Format(@"http://119.23.56.207/binding?openid={0}&secret={1}", userrequest.FromUserName, MD5);
-                        if (state_pwd == 2)
+                        string MD5 = MD5Encrypter(userrequest.FromUserName, state_pwd);
+                        if (state_pwd == "2")
+                        {
+                            string binding = string.Format(@"http://119.23.56.207/binding/else?openid={0}&secret={1}", userrequest.FromUserName, MD5);
                             return userrequest.Get_Link_Reply(binding, "请先绑定你的密码，网址当天有效");
-                        else
+                        }
+                        else if (state_pwd == "0")
+                        {
+                            string binding = string.Format(@"http://119.23.56.207/binding/studentnum?openid={0}&secret={1}", userrequest.FromUserName, MD5);
                             return userrequest.Get_Link_Reply(binding, "请先绑定你的学号，网址当天有效");
+                        }
                     }
                 }
                 #region print
@@ -52,18 +57,23 @@ namespace WeChatMVC.Controllers
                 #endregion
                 return userrequest.Get_Reply("test");
             }
+            else if (IsFromTencent("666888"))
+            {
+                userrequest = new UserRequest(Request.InputStream);
+                return userrequest.Get_Reply("hello world");
+            }
             else//不是腾讯发来的post
             {
                 return "Don't touch this server,guy";
             }
         }
-        
-        public bool IsFromTencent()
+
+        public bool IsFromTencent(string thistoken)
         {
             var signature = Request["signature"];
             var timestamp = Request["timestamp"];
             var nonce = Request["nonce"];
-            var token = "961016";
+            var token = thistoken;
             string[] ArrTmp = { token, timestamp, nonce };
             Array.Sort(ArrTmp);     //字典排序  
             string tmpStr = string.Join("", ArrTmp);
@@ -109,7 +119,7 @@ namespace WeChatMVC.Controllers
         /// </summary>
         /// <param name="passwordcode">暂时的，输入0表示查询体育状态</param>
         /// <returns></returns>
-        public int Get_UserstateInDB(int passwordcode)//待完成，用来检验用户是否已经填写了密码,在数据库完成后看看要不要改
+        public string Get_UserstateInDB(int passwordcode)//待完成，用来检验用户是否已经填写了密码,在数据库完成后看看要不要改
         {
             //这个查询在数据库正式完成后更改
             LinqToDB ltdb = new LinqToDB();
@@ -117,17 +127,17 @@ namespace WeChatMVC.Controllers
                          where t.wechatid == FromUserName
                          select t;
             if (select.Count() == 0)//表明这条记录根本不存在
-                return 0;
+                return "0";
             linqdbresult = select.ToList()[0];
             studentid = linqdbresult.studentnum;
             ty_pwd = linqdbresult.ty_password;
             //以上
-            int result = 2;
+            string result = "2";
             switch (passwordcode)
             {
                 case 0:
                     if (ty_pwd != null)
-                        result = 1;
+                        result = "1";
                     break;
                 case 1:
 

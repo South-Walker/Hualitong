@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Net;
-using System.IO;
-using System.Xml;
+﻿using System.Linq;
 using System.Data;
-using System.Web.Security;
-using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using WeChatMVC.Models;
 
@@ -21,42 +9,24 @@ namespace WeChatMVC.Controllers
     {
         // GET: Binding
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Else()
         {
             string openid = Request.QueryString["openid"];
             string secret = Request.QueryString["secret"];
-            if (secret == MD5Encrypter(openid))
+            ViewData["openid"] = openid;
+            ViewData["secret"] = secret;
+            if (secret == MD5Encrypter(openid, "2"))
             {
-                //等数据库完成。。。
-                LinqToDB ltdb = new LinqToDB();
-                var select = from t in ltdb.fortest
-                             where t.wechatid == openid
-                             select t;
-                ViewData["openid"] = openid;
-                ViewData["secret"] = secret;
-                if (select.Count() == 0)//表明这条记录根本不存在
-                    return View("BindingStudentNumView");
-                fortest linqdbresult = select.First();
-                if (linqdbresult.studentnum == null)
-                    return View("BindingStudentNumView");
-                else
-                    return View("BindingElseView");
+                return View("BindingElseView");
             }
-            else
-                return View();
-        }
-        [HttpGet]
-        public string Else()
-        {
-            return Welcome();
+            return View("null");
         }
         [HttpPost]
         public string Else(FormCollection c)
         {
             string openid = c["openid"];
             string secret = c["secret"];
-            string studentnum = c["studentnum"];
-            if (secret == MD5Encrypter(openid))
+            if (secret == MD5Encrypter(openid, "2")) 
             {
                 LinqToDB ltdb = new LinqToDB();
                 var select = from t in ltdb.fortest
@@ -65,17 +35,21 @@ namespace WeChatMVC.Controllers
                 fortest linqdbresult = select.First();
                 linqdbresult.ty_password = c["typwd"];
                 ltdb.SaveChanges();
-                return "success";
             }
-            else
-            {
-                return "failed";
-            }
+            return "string";
         }
         [HttpGet]
-        public string Studentnum()
+        public ActionResult Studentnum()
         {
-            return "success";
+            string openid = Request.QueryString["openid"];
+            string secret = Request.QueryString["secret"];
+            ViewData["openid"] = openid;
+            ViewData["secret"] = secret;
+            if (secret == MD5Encrypter(openid, "0")) 
+            {
+                return View("BindingStudentNumView");
+            }
+            return View("null");
         }
         [HttpPost]
         public string Studentnum(FormCollection c)
@@ -83,7 +57,7 @@ namespace WeChatMVC.Controllers
             string openid = c["openid"];
             string secret = c["secret"];
             string studentnum = c["studentnum"];
-            if (secret == MD5Encrypter(openid))
+            if (secret == MD5Encrypter(openid, "0"))
             {
                 LinqToDB ltdb = new LinqToDB();
                 var select = from t in ltdb.fortest
@@ -100,10 +74,8 @@ namespace WeChatMVC.Controllers
                     ltdb.fortest.Add(table);
                 }
                 ltdb.SaveChanges();
-                return "success";
             }
-            else
-                return "failed";
+            return "string";
         }
     }
 }
