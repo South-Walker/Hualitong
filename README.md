@@ -2,5 +2,8 @@
 ==
 华理通（南行负责部分）
 --
+###逻辑框图
+![hualitong](http://xiaoliming96.com/images/hualitong.png)  
 410打印店
 --
+###逻辑框图
