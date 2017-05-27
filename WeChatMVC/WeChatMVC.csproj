@@ -109,7 +109,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Properties\APIController.cs" />
+    <Compile Include="Models\MyHttpHelper.cs" />
+    <Compile Include="Models\Task.cs" />
+    <Compile Include="Models\UserRequest.cs" />
+    <Compile Include="Controllers\APIController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\BindingController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
