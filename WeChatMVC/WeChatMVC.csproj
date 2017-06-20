@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\BaiduMapController.cs" />
     <Compile Include="Models\MyHttpHelper.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Models\UserRequest.cs" />
@@ -133,6 +134,7 @@
     <Content Include="Views\FileUpload\PayView.cshtml" />
     <Content Include="Views\Binding\BindingStudentNumView.cshtml" />
     <Content Include="Views\Binding\BindingElseView.cshtml" />
+    <Content Include="Views\BaiduMap\MapView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
