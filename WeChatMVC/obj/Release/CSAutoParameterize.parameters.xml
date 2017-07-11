@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <parameters>
-  <parameter name="LinqToDB-Web.config Connection String" description="LinqToDB 由应用程序在 web.config 中用来访问数据库的连接字符串。" defaultValue="data source=bds240792229.my3w.com;initial catalog=bds240792229_db;user id=bds240792229;password=961016728;MultipleActiveResultSets=True;App=EntityFramework" tags="SqlConnectionString">
+  <parameter name="LinqToDB-Web.config Connection String" description="LinqToDB 由应用程序在 web.config 中用来访问数据库的连接字符串。" defaultValue="data source=bds240792229.my3w.com;initial catalog=bds240792229_db;user id=bds240792229;password=ak961016728;MultipleActiveResultSets=True;App=EntityFramework" tags="SqlConnectionString">
     <parameterEntry kind="XmlFile" scope="C:\\Users\\Administrator\\Desktop\\WeChatMVC\\WeChatMVC\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='LinqToDB']/@connectionString" />
   </parameter>
 </parameters>

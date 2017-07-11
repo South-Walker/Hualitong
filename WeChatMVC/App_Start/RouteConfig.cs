@@ -41,7 +41,7 @@ namespace WeChatMVC
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "BaiduMap", action = "index", id = UrlParameter.Optional }
+                defaults: new { controller = "wechat", action = "index", id = UrlParameter.Optional }
             );
 
         }

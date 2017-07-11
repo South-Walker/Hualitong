@@ -13,6 +13,7 @@ using System.Data;
 using System.Web.Security;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using System.Drawing;
 using WeChatMVC.Models;
 
 namespace WeChatMVC.Controllers
@@ -47,6 +48,35 @@ namespace WeChatMVC.Controllers
                             return userrequest.Get_Link_Reply(binding, "请先绑定你的学号，网址当天有效");
                         }
                     }
+                }
+                else if (userrequest.Content.Substring(0, 3) == "423") 
+                {
+                    string studentid = userrequest.Content.Substring(3, 8);
+                    string password = userrequest.Content.Substring(11);
+                    MyHttpHelper a = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
+                    a.HttpGet();
+                    MyHttpHelper b = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/Base/VerifyCode.aspx");
+                    Bitmap input = b.HttpGetImage();
+                    IdentificatImage id = new IdentificatImage(input);
+                    string vc = id.result;
+                    MyHttpHelper c = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
+                    c.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwULLTE2OTIxNDU0MTMPZBYCAgEPZBYCAgcPDxYCHgRUZXh0BVDlrabnlJ%2FliJ3lp4vlr4bnoIHkuLrouqvku73or4Hlj7flkI7lha3kvY3jgILlr4bnoIHplb%2FluqbkuI3otoXov4cxMOS4quWtl%2BespuOAgmRkZDanEMgmeoYOigCgOHJXPnTdIOtq&TxtStudentid=" + studentid + "&TxtPassword=" + password + "&txt_verifyCode=" + vc + "&BtnLogin=%E7%99%BB%E5%BD%95&__EVENTVALIDATION=%2FwEWBQKMjOWyBAKf8ICgBwLVqbaRCwLW2qK1CALi44eGDA67X3bLsDOxfx3HDe98WpJ8%2Bncw");
+                    MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
+                    d.HttpGet();
+                    string html = d.ToString();
+                    Regex regex = new Regex("<td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\"" +
+                        " valign=\"middle\"><font face=\"[^\"]*\">(?<kemu>[^<]*)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font>" +
+                        "</td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" valign=\"middle\">" +
+                        "<font face=\"[^\"]*\">(?<fengshu>\\d+)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" " +
+                        "valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td>"
+                        ); string result = "";
+                    MatchCollection mc = regex.Matches(html);
+                    foreach (Match item in mc)
+                    {
+                        GroupCollection gc = item.Groups;
+                        result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                    }
+                    return userrequest.Get_Reply(result);
                 }
                 #region print
                 if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")

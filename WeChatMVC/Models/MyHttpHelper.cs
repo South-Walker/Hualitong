@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Net;
 using System.IO;
+using System.Drawing;
 
 namespace WeChatMVC.Models
 {
@@ -25,6 +26,13 @@ namespace WeChatMVC.Models
         public void HttpGet()
         {
             GetResponse();
+        }
+        public Bitmap HttpGetImage()
+        {
+            response = (HttpWebResponse)request.GetResponse();
+            Stream stream = response.GetResponseStream();
+            Bitmap bitmap = (Bitmap)Image.FromStream(stream);
+            return bitmap;
         }
         public void HttpPost(string postcontent)
         {
