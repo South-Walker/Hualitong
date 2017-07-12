@@ -13,6 +13,8 @@ namespace WeChatMVC.Models
         /*
          * 所有Get.*_Relpy的函数，都返回直接能回复的xml格式字符
          */
+        public string Event;
+        public string EventKey;
         public string ToUserName;
         public string FromUserName;
         public string CreateTime;
@@ -24,11 +26,20 @@ namespace WeChatMVC.Models
         public fortest linqdbresult = null;//数据库完成后更改，这个只在调用Have_PWD方法后才会被赋值
         public string studentid = null;//同上
         public string ty_pwd = null;//同上
-
+        public string hualitong_love = "<a href=\"http://dvomg.xiuzan001.cn/marketing/9zgn84240qZp.html\">花一分钟了解“卿卿如晤”</a>\n\n<a href=\"http://www.yingkebao.top/f/58b243fae7aea92b7a2f2cad\">点击填写表白信</a>/玫瑰\n\n<a href=\"http://koudaigou.net/q/u0ipdd\">点击搜索表白信</a>";
+        public string hualitong_helper = "<a href=\"http://msg.weixiao.qq.com/t/d03a96c84480a4cf1e33d4ec385d47fb\">四六级管家</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/91fbdda8c93e3d7de8e1d526de4ab754\">校历查询</a>\n\n<a href=\"http://www.pocketuniversity.cn/index.php/Signin/index/index?media_id=gh_286321331ccb\">早起打卡</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/657cc0da738ced258f154fc88e99f3f0\">计算机等级成绩</a>";
         public UserRequest(XmlDocument doc)
         {
             XmlElement xe = doc.DocumentElement;
             fillclass(xe);
+        }
+        private void Save_log(XmlElement xe)//有误
+        {
+            string xml = xe.Value;
+            FileStream fs = new FileStream(@"C:\Users\Administrator\Desktop\test.txt", FileMode.Append, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.WriteLine(xml);
+            sw.Flush();
         }
         /// <summary>
         /// 返回的值中0表示用户没有绑定学号，
@@ -97,7 +108,17 @@ namespace WeChatMVC.Models
                 MediaId = xe.SelectSingleNode("MediaId").InnerText;
                 PicUrl = xe.SelectSingleNode("PicUrl").InnerText;
             }
+            else if(MsgType == "event")
+            {
+                Event = xe.SelectSingleNode("Event").InnerText + "";
+                EventKey = xe.SelectSingleNode("EventKey").InnerText + "";
+                return;
+            }
             MsgId = xe.SelectSingleNode("MsgId").InnerText;
+        }
+        public bool IsClick()
+        {
+            return Event == "CLICK";
         }
         public string Get_MJ_Reply(DateTime buyday, DateTime ticketday, string origination, string destination)
         {
@@ -133,16 +154,6 @@ namespace WeChatMVC.Models
             if (printertask.filename == "")
                 return Get_Reply(printertask.errorstate);
             string server = (printertask.is_outdoor) ? "送货上门" : "自取";
-            /*
-            string reply = "用户上传的文件地址：" + @"http://119.23.56.207/upload/" + printertask.filename + "\r\n" +
-                "打印的份数：" + printertask.num + "\r\n" +
-                "一份有：" + printertask.pernum + "张\r\n" +
-                "他应该付" + printertask.sum + "元\r\n" +
-                "用户的联系方式：" + printertask.tele + "\r\n" +
-                "用户下单时间：" + printertask.date + "\r\n" +
-                "用户的地址：" + printertask.address + "\r\n" +
-                "用户留言：" + printertask.msg + "\r\n" +
-                "他要求：" + server;*/
             string reply = string.Format(
                 "用户上传的文件地址： http://119.23.56.207/upload/{0} \r\n打印的份数：{1}\r\n一份有：{2}张\r\n他应该付：{3}元\r\n用户的联系方式：{4}\r\n用户的下单时间：{5}\r\n用户的地址：{6}\r\n用户留言：{7}\r\n他要求：{8}"
                 , printertask.filename, printertask.num

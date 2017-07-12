@@ -24,9 +24,28 @@ namespace WeChatMVC.Controllers
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
-            if (IsFromTencent("961016") && Request.HttpMethod == "POST")//确认是腾讯发来,debug前会在前面加上感叹号
+            if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
+                return Request["echostr"];
+            }
+            if (IsFromTencent("961016") && Request.HttpMethod == "POST") //确认是腾讯发来,debug前会在前面加上感叹号
+            { 
                 userrequest = new UserRequest(Request.InputStream);
+                if (userrequest.IsClick())
+                {
+                    if (userrequest.EventKey == "hualitong_love")
+                    {
+                        return userrequest.Get_Reply(userrequest.hualitong_love);
+                    }
+                    else if (userrequest.EventKey == "hualitong_helper")
+                    {
+                        return userrequest.Get_Reply(userrequest.hualitong_helper);
+                    }
+                    else
+                    {
+                        return userrequest.Get_Reply("unknowevent:" + userrequest.EventKey);
+                    }
+                }
                 if (userrequest.Content == "422")
                 {
                     string state_pwd = userrequest.Get_UserstateInDB(0);
@@ -49,34 +68,10 @@ namespace WeChatMVC.Controllers
                         }
                     }
                 }
-                else if (userrequest.Content.Substring(0, 3) == "423") 
+                else if (userrequest.Content.Substring(0, 3) == "423")
                 {
-                    string studentid = userrequest.Content.Substring(3, 8);
-                    string password = userrequest.Content.Substring(11);
-                    MyHttpHelper a = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
-                    a.HttpGet();
-                    MyHttpHelper b = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/Base/VerifyCode.aspx");
-                    Bitmap input = b.HttpGetImage();
-                    IdentificatImage id = new IdentificatImage(input);
-                    string vc = id.result;
-                    MyHttpHelper c = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
-                    c.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwULLTE2OTIxNDU0MTMPZBYCAgEPZBYCAgcPDxYCHgRUZXh0BVDlrabnlJ%2FliJ3lp4vlr4bnoIHkuLrouqvku73or4Hlj7flkI7lha3kvY3jgILlr4bnoIHplb%2FluqbkuI3otoXov4cxMOS4quWtl%2BespuOAgmRkZDanEMgmeoYOigCgOHJXPnTdIOtq&TxtStudentid=" + studentid + "&TxtPassword=" + password + "&txt_verifyCode=" + vc + "&BtnLogin=%E7%99%BB%E5%BD%95&__EVENTVALIDATION=%2FwEWBQKMjOWyBAKf8ICgBwLVqbaRCwLW2qK1CALi44eGDA67X3bLsDOxfx3HDe98WpJ8%2Bncw");
-                    MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
-                    d.HttpGet();
-                    string html = d.ToString();
-                    Regex regex = new Regex("<td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\"" +
-                        " valign=\"middle\"><font face=\"[^\"]*\">(?<kemu>[^<]*)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font>" +
-                        "</td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" valign=\"middle\">" +
-                        "<font face=\"[^\"]*\">(?<fengshu>\\d+)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" " +
-                        "valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td>"
-                        ); string result = "";
-                    MatchCollection mc = regex.Matches(html);
-                    foreach (Match item in mc)
-                    {
-                        GroupCollection gc = item.Groups;
-                        result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
-                    }
-                    return userrequest.Get_Reply(result);
+                    APIController api = new APIController();
+                    return userrequest.Get_Reply(api.jwc(userrequest.Content.Substring(3, 8), userrequest.Content.Substring(11)));
                 }
                 #region print
                 if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")
