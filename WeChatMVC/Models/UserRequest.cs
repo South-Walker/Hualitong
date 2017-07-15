@@ -23,11 +23,11 @@ namespace WeChatMVC.Models
         public string MsgId;
         public string PicUrl;
         public string MediaId;
-        public fortest linqdbresult = null;//数据库完成后更改，这个只在调用Have_PWD方法后才会被赋值
         public string studentid = null;//同上
         public string ty_pwd = null;//同上
-        public string hualitong_love = "<a href=\"http://dvomg.xiuzan001.cn/marketing/9zgn84240qZp.html\">花一分钟了解“卿卿如晤”</a>\n\n<a href=\"http://www.yingkebao.top/f/58b243fae7aea92b7a2f2cad\">点击填写表白信</a>/玫瑰\n\n<a href=\"http://koudaigou.net/q/u0ipdd\">点击搜索表白信</a>";
-        public string hualitong_helper = "<a href=\"http://msg.weixiao.qq.com/t/d03a96c84480a4cf1e33d4ec385d47fb\">四六级管家</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/91fbdda8c93e3d7de8e1d526de4ab754\">校历查询</a>\n\n<a href=\"http://www.pocketuniversity.cn/index.php/Signin/index/index?media_id=gh_286321331ccb\">早起打卡</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/657cc0da738ced258f154fc88e99f3f0\">计算机等级成绩</a>";
+        public static string hualitong_love = "<a href=\"http://dvomg.xiuzan001.cn/marketing/9zgn84240qZp.html\">花一分钟了解“卿卿如晤”</a>\n\n<a href=\"http://www.yingkebao.top/f/58b243fae7aea92b7a2f2cad\">点击填写表白信</a>/玫瑰\n\n<a href=\"http://koudaigou.net/q/u0ipdd\">点击搜索表白信</a>";
+        public static string hualitong_helper = "<a href=\"http://msg.weixiao.qq.com/t/d03a96c84480a4cf1e33d4ec385d47fb\">四六级管家</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/91fbdda8c93e3d7de8e1d526de4ab754\">校历查询</a>\n\n<a href=\"http://www.pocketuniversity.cn/index.php/Signin/index/index?media_id=gh_286321331ccb\">早起打卡</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/657cc0da738ced258f154fc88e99f3f0\">计算机等级成绩</a>";
+        public static string hualitong_welcome = "Hey~这里是主页君\n\\(￣︶￣*\\))有眼光的你关注了个非常有用的公众号呦 ~么么哒~\n\n 选择“四维口袋”，点击“一键课表”或者“一键成绩”可以进行初始绑定哦，以后就能一键查询成绩和当天课表啦 ~~\n\n  由于公众号正在建设中，更多功能的推出请关注我们的后期推送";
         public UserRequest(XmlDocument doc)
         {
             XmlElement xe = doc.DocumentElement;
@@ -48,36 +48,7 @@ namespace WeChatMVC.Models
         /// </summary>
         /// <param name="passwordcode">暂时的，输入0表示查询体育状态</param>
         /// <returns></returns>
-        public string Get_UserstateInDB(int passwordcode)//待完成，用来检验用户是否已经填写了密码,在数据库完成后看看要不要改
-        {
-            //这个查询在数据库正式完成后更改
-            LinqToDB ltdb = new LinqToDB();
-            var select = from t in ltdb.fortest
-                         where t.wechatid == FromUserName
-                         select t;
-            if (select.Count() == 0)//表明这条记录根本不存在
-                return "0";
-            linqdbresult = select.ToList()[0];
-            studentid = linqdbresult.studentnum;
-            ty_pwd = linqdbresult.ty_password;
-            //以上
-            string result = "2";
-            switch (passwordcode)
-            {
-                case 0:
-                    if (ty_pwd != null)
-                        result = "1";
-                    break;
-                case 1:
-
-                    break;
-                case 2:
-
-                    break;
-            }
-            return result;
-        }
-        public UserRequest(string xml)
+       public UserRequest(string xml)
         {
             XmlDocument xmldoc = new XmlDocument();
             xmldoc.LoadXml(xml);
@@ -111,10 +82,20 @@ namespace WeChatMVC.Models
             else if(MsgType == "event")
             {
                 Event = xe.SelectSingleNode("Event").InnerText + "";
-                EventKey = xe.SelectSingleNode("EventKey").InnerText + "";
+                if (Event == "CLICK")
+                {
+                    EventKey = xe.SelectSingleNode("EventKey").InnerText + "";
+                }
+                else if (Event == "subscribe")
+                {
+
+                }
                 return;
             }
-            MsgId = xe.SelectSingleNode("MsgId").InnerText;
+        }
+        public bool IsSubscribe()
+        {
+            return Event == "subscribe";
         }
         public bool IsClick()
         {

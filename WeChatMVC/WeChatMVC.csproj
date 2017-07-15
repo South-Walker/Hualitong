@@ -59,6 +59,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -110,30 +111,39 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaiduMapController.cs" />
+    <Compile Include="Models\DBManual.cs" />
+    <Compile Include="Models\HualitongDB.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HualitongDB.dbml</DependentUpon>
+    </Compile>
     <Compile Include="Models\MyHttpHelper.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Models\UserRequest.cs" />
     <Compile Include="Controllers\APIController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
-    <Compile Include="Controllers\BindingController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
     <Compile Include="Controllers\WeChatController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\fortest.cs" />
-    <Compile Include="Models\LinqToDB.cs" />
+    <Compile Include="Models\VerificationCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\web.config" />
+    <Content Include="Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="packages.config" />
+    <Content Include="Models\HualitongDB.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>HualitongDB.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Properties\PublishProfiles\publish.pubxml" />
     <Content Include="Views\FileUpload\IndexView.cshtml" />
     <Content Include="Views\FileUpload\ErrorView.cshtml" />
     <Content Include="Views\FileUpload\PayView.cshtml" />
-    <Content Include="Views\Binding\BindingStudentNumView.cshtml" />
-    <Content Include="Views\Binding\BindingElseView.cshtml" />
     <Content Include="Views\BaiduMap\MapView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -146,6 +156,14 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\API\" />
     <Folder Include="Views\WeChat\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Models\HualitongDB.dbml.layout">
+      <DependentUpon>HualitongDB.dbml</DependentUpon>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

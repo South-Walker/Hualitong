@@ -20,6 +20,7 @@ namespace WeChatMVC.Controllers
 {
     public class WeChatController : BaseController
     {
+        
         static UserRequest userrequest;
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
@@ -33,45 +34,38 @@ namespace WeChatMVC.Controllers
                 userrequest = new UserRequest(Request.InputStream);
                 if (userrequest.IsClick())
                 {
-                    if (userrequest.EventKey == "hualitong_love")
+                    switch (userrequest.EventKey)
                     {
-                        return userrequest.Get_Reply(userrequest.hualitong_love);
-                    }
-                    else if (userrequest.EventKey == "hualitong_helper")
-                    {
-                        return userrequest.Get_Reply(userrequest.hualitong_helper);
-                    }
-                    else
-                    {
-                        return userrequest.Get_Reply("unknowevent:" + userrequest.EventKey);
-                    }
-                }
-                if (userrequest.Content == "422")
-                {
-                    string state_pwd = userrequest.Get_UserstateInDB(0);
-                    if (state_pwd == "1")  //待做，这里要返回一个url
-                    {
-                        return userrequest.Get_Reply("不好意思体育网站崩了");
-                    }
-                    else
-                    {
-                        string MD5 = MD5Encrypter(userrequest.FromUserName, state_pwd);
-                        if (state_pwd == "2")
-                        {
-                            string binding = string.Format(@"http://119.23.56.207/binding/else?openid={0}&secret={1}", userrequest.FromUserName, MD5);
-                            return userrequest.Get_Link_Reply(binding, "请先绑定你的密码，网址当天有效");
-                        }
-                        else if (state_pwd == "0")
-                        {
-                            string binding = string.Format(@"http://119.23.56.207/binding/studentnum?openid={0}&secret={1}", userrequest.FromUserName, MD5);
-                            return userrequest.Get_Link_Reply(binding, "请先绑定你的学号，网址当天有效");
-                        }
+                        case "hualitong_love":
+                            return userrequest.Get_Reply(UserRequest.hualitong_love);
+                        case "hualitong_helper":
+                            return userrequest.Get_Reply(UserRequest.hualitong_helper);
+                        case "hualitong_grade":
+                            return userrequest.Get_Reply(DBManual.GetGrade(userrequest.FromUserName));
+                        case "hualitong_classtable":
+                            return userrequest.Get_Reply(DBManual.GetClassGrade(userrequest.FromUserName));
+                        default:
+                            return userrequest.Get_Reply("unknowevent:" + userrequest.EventKey);
                     }
                 }
-                else if (userrequest.Content.Substring(0, 3) == "423")
+                else if (userrequest.IsSubscribe())
                 {
-                    APIController api = new APIController();
-                    return userrequest.Get_Reply(api.jwc(userrequest.Content.Substring(3, 8), userrequest.Content.Substring(11)));
+                    DBManual.AddIntoUsers(userrequest.FromUserName);
+                    return userrequest.Get_Reply(UserRequest.hualitong_welcome);
+                }
+                else
+                {
+                    string message = userrequest.Content;
+                    if (message.Substring(0, DBManual.xhmes.Length) == DBManual.xhmes)
+                    {
+                        DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.xhmes.Length), userrequest.FromUserName, DBManual.xhmes);
+                        return userrequest.Get_Reply("学号已修改，现在您绑定的学号为：" + message.Substring(DBManual.xhmes.Length));
+                    }
+                    else if (message.Substring(0, DBManual.jwcmes.Length) == DBManual.jwcmes)
+                    {
+                        DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.jwcmes.Length), userrequest.FromUserName, DBManual.jwcmes);
+                        return userrequest.Get_Reply("教务处密码已修改，现在您绑定的教务处密码为：" + message.Substring(DBManual.jwcmes.Length));
+                    }
                 }
                 #region print
                 if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")
@@ -81,11 +75,6 @@ namespace WeChatMVC.Controllers
                 }
                 #endregion
                 return userrequest.Get_Reply("test");
-            }
-            else if (IsFromTencent("666888"))
-            {
-                userrequest = new UserRequest(Request.InputStream);
-                return userrequest.Get_Reply("hello world");
             }
             else//不是腾讯发来的post
             {
@@ -114,4 +103,4 @@ namespace WeChatMVC.Controllers
             }
         }//信息来源是腾讯才会返回true
     }
-}
+};
