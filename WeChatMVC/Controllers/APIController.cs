@@ -3,6 +3,7 @@ using WeChatMVC.Models;
 using System.Web.Mvc;
 using System.Drawing;
 using System.Collections.Generic;
+using System;
 
 namespace WeChatMVC.Controllers
 {
@@ -59,7 +60,100 @@ namespace WeChatMVC.Controllers
             json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return json;
         }
-        public string jwc(string studentnum, string pwd)
+        private const string log_success = "success";
+        private const string log_fail_pwd = "pwd";
+        private const string log_fail_vc = "vc"; 
+        public string jwc_largetable(string studentnum, string pwd)
+        {
+            if (getjwcsession(studentnum, pwd) == log_fail_pwd)
+            {
+                return "密码错误，请回复jwc+密码重新绑定密码";
+            }
+            MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
+            d.HttpGet();
+            string html = d.ToString();
+            Regex regex = new Regex("<td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\"" +
+                " valign=\"middle\"><font face=\"[^\"]*\">(?<kemu>[^<]*)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font>" +
+                "</td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" valign=\"middle\">" +
+                "<font face=\"[^\"]*\">(?<fengshu>\\d+)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" " +
+                "valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td>"
+                );
+            string result = "";
+            MatchCollection mc = regex.Matches(html);
+            foreach (Match item in mc)
+            {
+                GroupCollection gc = item.Groups;
+                result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+            }
+            return result;
+        }
+        public string jwc_smarttable(string studentnum, string pwd)
+        {
+            try
+            {
+                if (getjwcsession(studentnum, pwd) == log_fail_pwd)
+                {
+                    return "密码错误，请回复jwc+密码重新绑定密码";
+                }
+                MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_ScoreTableYearTerm.aspx?i=0%3a26%3a46");
+                d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM1MDcwMDg1MQ9kFgICAQ9kFgICAQ9kFgZmD2QWAmYPZBYCAgMPDxYCHgdFbmFibGVkaGRkAgEPZBYCZg9kFgICAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQhUZXJtTmFtZR4ORGF0YVZhbHVlRmllbGQFCFllYXJUZXJtHgtfIURhdGFCb3VuZGdkEBUFFeKAlOKAlOivt%2BmAieaLqeKAlOKAlBYyMDE2LTIwMTflrablubQy5a2m5pyfFjIwMTYtMjAxN%2BWtpuW5tDHlrabmnJ8WMjAxNS0yMDE25a2m5bm0MuWtpuacnxYyMDE1LTIwMTblrablubQx5a2m5pyfFQUBMAUyMDE2MgUyMDE2MQUyMDE1MgUyMDE1MRQrAwVnZ2dnZ2RkAgMPZBYCZg9kFgJmDzwrAAsAZGSDV9YWPjkZzs%2BQA3Jxh1jr8S5yVA%3D%3D&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWCQLCq5zYDAKC5sFXApf3trkEAtjpwosFAo%2F6pfQIAoD6pfQIAo%2F6iQkCgPqJCQLax9vVBk%2F0%2B3xjQYQIiqbgEfy%2FW8XcekCs");
+                string html = d.ToString();
+                Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
+                html = songti.Replace(html, "");
+                Regex zhiti = new Regex("</font>");
+                html = zhiti.Replace(html, "");
+                Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d+(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d+(\.\d+)?)[^<]*</td><td>(?<fengshu>\d+(\.\d+)?)[^<]*</td><td>\d+(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
+                string result = "";
+                MatchCollection mc = regex.Matches(html);
+                foreach (Match item in mc)
+                {
+                    GroupCollection gc = item.Groups;
+                    result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                }
+                return result;
+            }
+            catch
+            {
+                return jwc_largetable(studentnum, pwd);
+            }
+        }
+        public string jwc_classtable(string studentnum, string pwd)
+        {
+            if (getjwcsession(studentnum, pwd) == log_fail_pwd)
+            {
+                return "密码错误，请回复jwc+密码重新绑定密码";
+            }
+            MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/E_SelectCourse/ScInFormation/syllabus.aspx");
+            d.HttpPost("__VIEWSTATE=%2FwEPDwUKLTg3NzgzODIwNw9kFgICAQ9kFgICAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQhZZWFyVGVybR4ORGF0YVZhbHVlRmllbGQFAnNtHgtfIURhdGFCb3VuZGdkEBUCBTIwMTcxBTIwMTYyFQIJ5LiL5a2m5pyfCeacrOWtpuacnxQrAwJnZ2RkZNO%2Fri3X13dLfsVR9NFAAfI1ATzP&selyeartermflag=%E4%B8%8B%E5%AD%A6%E6%9C%9F&bttn_search=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWBAKX%2B67KDQKukO%2FqDwLJpuDqDwK1man8CYWGxTfqcteijecSaCWqU1U3a0ll");
+            string html = d.ToString();
+            Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
+            html = songti.Replace(html, "");
+            Regex zhiti = new Regex("</font>");
+            html = zhiti.Replace(html, "");
+            Regex regex = new Regex("<td[^>]*>(?<class>[^<]*)</td><td[^>]*>\\d+</td><td[^>]*>(?<teacher>[^<]*)</td><td[^>]*><font size=1>(?<date>[^<]*)</td><td [^>]*><font size=1>(?<room>[^<]*)</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td>");
+            MatchCollection mc = regex.Matches(html);
+            foreach (Match m in mc)
+            {
+                GroupCollection gc = m.Groups;
+                string teacher = gc["teacher"].Value;
+                string classname = gc["class"].Value;
+                string date = gc["date"].Value;
+                string room = gc["room"].Value;
+                classtableob now = new classtableob(teacher, classname, date, room);
+                classtableob.classtable[now.weekcode].Add(now);
+            }
+            string result = "";
+            int nowweekday = (int)DateTime.Now.DayOfWeek;
+            foreach (classtableob item in classtableob.classtable[nowweekday])
+            {
+                result = result + item.classname + ",\n授课教师:" + item.teacher  +"(" + item.room + ")\n";
+            }
+            classtableob.classtable.Clear();
+            if (result == "")
+                return "今天并没有安排课程！";
+            return result;
+        }
+        private string getjwcsession(string studentnum, string pwd)
         {
             MyHttpHelper a = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
             a.HttpGet();
@@ -69,22 +163,74 @@ namespace WeChatMVC.Controllers
             string vc = id.result;
             MyHttpHelper c = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
             c.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwULLTE2OTIxNDU0MTMPZBYCAgEPZBYCAgcPDxYCHgRUZXh0BVDlrabnlJ%2FliJ3lp4vlr4bnoIHkuLrouqvku73or4Hlj7flkI7lha3kvY3jgILlr4bnoIHplb%2FluqbkuI3otoXov4cxMOS4quWtl%2BespuOAgmRkZDanEMgmeoYOigCgOHJXPnTdIOtq&TxtStudentid=" + studentnum + "&TxtPassword=" + pwd + "&txt_verifyCode=" + vc + "&BtnLogin=%E7%99%BB%E5%BD%95&__EVENTVALIDATION=%2FwEWBQKMjOWyBAKf8ICgBwLVqbaRCwLW2qK1CALi44eGDA67X3bLsDOxfx3HDe98WpJ8%2Bncw");
-            MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
-            d.HttpGet();
-            string html = d.ToString();
-            Regex regex = new Regex("<td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\"" +
-                " valign=\"middle\"><font face=\"[^\"]*\">(?<kemu>[^<]*)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font>" +
-                "</td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" valign=\"middle\">" +
-                "<font face=\"[^\"]*\">(?<fengshu>\\d+)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" " +
-                "valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td>"
-                ); string result = "";
-            MatchCollection mc = regex.Matches(html);
-            foreach (Match item in mc)
+            string html = c.ToString();
+            if (MyHttpHelper.regexsuccess.IsMatch(html))
             {
-                GroupCollection gc = item.Groups;
-                result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                return log_success;
             }
-            return result;
+            else if (MyHttpHelper.regexpwdfail.IsMatch(html))
+            {
+                return log_fail_pwd;
+            }
+            else if (MyHttpHelper.regexvcfail.IsMatch(html))
+            {
+                return getjwcsession(studentnum, pwd);
+            }
+            return "unknownfail";
+        }
+    }
+    class classtableob
+    {
+        public static List<List<classtableob>> classtable = new List<List<classtableob>>();
+        public string teacher = "";
+        public string classname = "";
+        public int timebegin = 0;
+        public int timeend = 11;
+        public int datebegin = 0;
+        public int dateend = 20;
+        public string weekday = "";
+        public int weekcode = 0;
+        public string room = "";
+        public classtableob(string thisteacher, string thisclassname, string thisdate, string thisroom)
+        {
+            if (classtable.Count == 0)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    List<classtableob> list = new List<classtableob>();
+                    classtable.Add(list);
+                }
+            }
+            teacher = thisteacher;
+            classname = thisclassname;
+            room = thisroom;
+            Regex regex = new Regex("(?<weekday>[^\\s]*)\\s+(?<timebegin>\\d+)-(?<timeend>\\d+)节\\s+(?<datebegin>\\d+)-(?<dateend>\\d+)(?<quanorsuang>[.]*)");
+            GroupCollection gc = regex.Match(thisdate).Groups;
+            timebegin = Convert.ToInt32(gc["timebegin"].Value);
+            timeend = Convert.ToInt32(gc["timeend"].Value);
+            datebegin = Convert.ToInt32(gc["datebegin"].Value);
+            dateend = Convert.ToInt32(gc["dateend"].Value);
+            weekday = gc["weekday"].Value;
+            switch (weekday)
+            {
+                case "周一":
+                    weekcode = 1;
+                    break;
+                case "周二":
+                    weekcode = 2;
+                    break;
+                case "周三":
+                    weekcode = 3;
+                    break;
+                case "周四":
+                    weekcode = 4;
+                    break;
+                case "周五":
+                    weekcode = 5;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

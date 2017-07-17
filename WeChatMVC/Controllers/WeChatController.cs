@@ -40,12 +40,14 @@ namespace WeChatMVC.Controllers
                             return userrequest.Get_Reply(UserRequest.hualitong_love);
                         case "hualitong_helper":
                             return userrequest.Get_Reply(UserRequest.hualitong_helper);
+                        case "hualitong_changestudentnum":
+                            return userrequest.Get_Reply(UserRequest.hualitong_changestudentnum);
                         case "hualitong_grade":
                             return userrequest.Get_Reply(DBManual.GetGrade(userrequest.FromUserName));
                         case "hualitong_classtable":
                             return userrequest.Get_Reply(DBManual.GetClassGrade(userrequest.FromUserName));
                         default:
-                            return userrequest.Get_Reply("unknowevent:" + userrequest.EventKey);
+                            return userrequest.Get_Reply("功能还在开发中，敬请期待~");
                     }
                 }
                 else if (userrequest.IsSubscribe())

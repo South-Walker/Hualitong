@@ -85,14 +85,39 @@ namespace WeChatMVC.Models
                     else
                     {
                         APIController api = new APIController();
-                        return api.jwc(studentnum, jwpwd);
+                        return api.jwc_smarttable(studentnum, jwpwd);
                     } 
                 }
             }
         }
         public static string GetClassGrade(string wechat_id)
         {
-            return "功能还在开发，敬请期待！";
+            using (HualitongDBDataContext db = new HualitongDBDataContext())
+            {
+                var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
+                if (hasexistdate == null)
+                {
+                    return "系统错误，请联系管理员，手机号17077706886";
+                }
+                else
+                {
+                    string jwpwd = hasexistdate.jw_pwd;
+                    string studentnum = hasexistdate.student_num;
+                    if (studentnum == null)
+                    {
+                        return "请输入xh+您的学号来绑定学号";
+                    }
+                    if (jwpwd == null)
+                    {
+                        return "请输入jwc+您的教务处密码来解锁此功能";
+                    }
+                    else
+                    {
+                        APIController api = new APIController();
+                        return api.jwc_classtable(studentnum, jwpwd);
+                    }
+                }
+            }
         }
     }
 }

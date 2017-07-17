@@ -2,11 +2,15 @@
 using System.Net;
 using System.IO;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace WeChatMVC.Models
 {
     class MyHttpHelper
     {
+        public static Regex regexsuccess = new Regex("您好！");
+        public static Regex regexpwdfail = new Regex("密码错误");
+        public static Regex regexvcfail = new Regex("验证码不正确！");
         static CookieContainer cookiecontainer = new CookieContainer();
         static CookieCollection cookiecollection = new CookieCollection();
         HttpWebRequest request;
