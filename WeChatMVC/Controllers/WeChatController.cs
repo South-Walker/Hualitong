@@ -66,7 +66,7 @@ namespace WeChatMVC.Controllers
                     else if (message.Substring(0, DBManual.jwcmes.Length) == DBManual.jwcmes)
                     {
                         DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.jwcmes.Length), userrequest.FromUserName, DBManual.jwcmes);
-                        return userrequest.Get_Reply("教务处密码已修改，现在您绑定的教务处密码为：" + message.Substring(DBManual.jwcmes.Length));
+                        return userrequest.Get_Reply("教务处密码已修改，现在您绑定的教务处密码为：" + message.Substring(DBManual.jwcmes.Length) + "，为防止密码泄露，请及时删除此条消息");
                     }
                 }
                 #region print
@@ -76,7 +76,7 @@ namespace WeChatMVC.Controllers
                     return userrequest.Get_Printer_Administrator_Reply(printtask);
                 }
                 #endregion
-                return userrequest.Get_Reply("test");
+                return "";
             }
             else//不是腾讯发来的post
             {

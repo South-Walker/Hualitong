@@ -68,7 +68,8 @@ namespace WeChatMVC.Models
                 var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
                 if (hasexistdate == null)
                 {
-                    return "系统错误，请联系管理员，手机号17077706886";
+                    AddIntoUsers(wechat_id);
+                    return "请输入xh+您的学号来绑定学号，如xh10161000";
                 }
                 else
                 {
@@ -76,11 +77,11 @@ namespace WeChatMVC.Models
                     string studentnum = hasexistdate.student_num;
                     if (studentnum == null)
                     {
-                        return "请输入xh+您的学号来绑定学号";
+                        return "请输入xh+您的学号来绑定学号，如xh10161000";
                     }
                     if (jwpwd == null)
                     {
-                        return "请输入jwc+您的教务处密码来解锁此功能";
+                        return "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
                     }
                     else
                     {
@@ -97,7 +98,8 @@ namespace WeChatMVC.Models
                 var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
                 if (hasexistdate == null)
                 {
-                    return "系统错误，请联系管理员，手机号17077706886";
+                    AddIntoUsers(wechat_id);
+                    return "请输入xh+您的学号来绑定学号，如xh10161000";
                 }
                 else
                 {
@@ -105,11 +107,11 @@ namespace WeChatMVC.Models
                     string studentnum = hasexistdate.student_num;
                     if (studentnum == null)
                     {
-                        return "请输入xh+您的学号来绑定学号";
+                        return "请输入xh+您的学号来绑定学号，如xh10161000";
                     }
                     if (jwpwd == null)
                     {
-                        return "请输入jwc+您的教务处密码来解锁此功能";
+                        return "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
                     }
                     else
                     {
