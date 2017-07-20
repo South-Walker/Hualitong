@@ -50,7 +50,7 @@ namespace WeChatMVC.Models
         /// </summary>
         /// <param name="passwordcode">暂时的，输入0表示查询体育状态</param>
         /// <returns></returns>
-       public UserRequest(string xml)
+        public UserRequest(string xml)
         {
             XmlDocument xmldoc = new XmlDocument();
             xmldoc.LoadXml(xml);
