@@ -62,12 +62,18 @@ namespace WeChatMVC.Controllers
         }
         private const string log_success = "success";
         private const string log_fail_pwd = "pwd";
-        private const string log_fail_vc = "vc"; 
+        private const string log_fail_vc = "vc";
+        private const string log_fail_xh = "xh";
         public string jwc_largetable(string studentnum, string pwd)
         {
-            if (getjwcsession(studentnum, pwd) == log_fail_pwd)
+            string sessionresponse = getjwcsession(studentnum, pwd);
+            if (sessionresponse == log_fail_pwd)
             {
-                return "密码错误，请回复jwc+密码重新绑定密码";
+                return "密码错误，请回复jwc+密码重新绑定密码，如jwc123456";
+            }
+            else if (sessionresponse == log_fail_xh)
+            {
+                return "您输入的学号：" + studentnum + "，长度不正确";
             }
             MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
             d.HttpGet();
@@ -85,48 +91,62 @@ namespace WeChatMVC.Controllers
                 GroupCollection gc = item.Groups;
                 result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
             }
+            Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
+            result = result + "平均绩点："+ jidian.Match(html).Groups["jidian"].Value; ;
             return result;
         }
         public string jwc_smarttable(string studentnum, string pwd)
         {
-            try
+            if (getjwcsession(studentnum, pwd) == log_fail_pwd)
             {
-                if (getjwcsession(studentnum, pwd) == log_fail_pwd)
-                {
-                    return "密码错误，请回复jwc+密码重新绑定密码，如jwc123456";
-                }
-                MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_ScoreTableYearTerm.aspx?i=0%3a26%3a46");
-                d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM1MDcwMDg1MQ9kFgICAQ9kFgICAQ9kFgZmD2QWAmYPZBYCAgMPDxYCHgdFbmFibGVkaGRkAgEPZBYCZg9kFgICAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQhUZXJtTmFtZR4ORGF0YVZhbHVlRmllbGQFCFllYXJUZXJtHgtfIURhdGFCb3VuZGdkEBUFFeKAlOKAlOivt%2BmAieaLqeKAlOKAlBYyMDE2LTIwMTflrablubQy5a2m5pyfFjIwMTYtMjAxN%2BWtpuW5tDHlrabmnJ8WMjAxNS0yMDE25a2m5bm0MuWtpuacnxYyMDE1LTIwMTblrablubQx5a2m5pyfFQUBMAUyMDE2MgUyMDE2MQUyMDE1MgUyMDE1MRQrAwVnZ2dnZ2RkAgMPZBYCZg9kFgJmDzwrAAsAZGSDV9YWPjkZzs%2BQA3Jxh1jr8S5yVA%3D%3D&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWCQLCq5zYDAKC5sFXApf3trkEAtjpwosFAo%2F6pfQIAoD6pfQIAo%2F6iQkCgPqJCQLax9vVBk%2F0%2B3xjQYQIiqbgEfy%2FW8XcekCs");
-                string html = d.ToString();
-                Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
-                html = songti.Replace(html, "");
-                Regex zhiti = new Regex("</font>");
-                html = zhiti.Replace(html, "");
-                Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d+(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d+(\.\d+)?)[^<]*</td><td>(?<fengshu>\d+(\.\d+)?)[^<]*</td><td>\d+(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
-                string result = "";
-                MatchCollection mc = regex.Matches(html);
-                foreach (Match item in mc)
-                {
-                    GroupCollection gc = item.Groups;
-                    result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
-                }
-                MyHttpHelper e = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
-                e.HttpGet();
-                Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
-                result = result + "平均绩点：" + jidian.Match(e.ToString()).Groups["jidian"].Value;
-                return result;
+                return "密码错误，请回复jwc+密码重新绑定密码，如jwc123456";
             }
-            catch
+            MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_ScoreTableYearTerm.aspx?i=0%3a26%3a46");
+            d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM1MDcwMDg1MQ9kFgICAQ9kFgICAQ9kFgZmD2QWAmYPZBYCAgMPDxYCHgdFbmFibGVkaGRkAgEPZBYCZg9kFgICAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQhUZXJtTmFtZR4ORGF0YVZhbHVlRmllbGQFCFllYXJUZXJtHgtfIURhdGFCb3VuZGdkEBUFFeKAlOKAlOivt%2BmAieaLqeKAlOKAlBYyMDE2LTIwMTflrablubQy5a2m5pyfFjIwMTYtMjAxN%2BWtpuW5tDHlrabmnJ8WMjAxNS0yMDE25a2m5bm0MuWtpuacnxYyMDE1LTIwMTblrablubQx5a2m5pyfFQUBMAUyMDE2MgUyMDE2MQUyMDE1MgUyMDE1MRQrAwVnZ2dnZ2RkAgMPZBYCZg9kFgJmDzwrAAsAZGSDV9YWPjkZzs%2BQA3Jxh1jr8S5yVA%3D%3D&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWCQLCq5zYDAKC5sFXApf3trkEAtjpwosFAo%2F6pfQIAoD6pfQIAo%2F6iQkCgPqJCQLax9vVBk%2F0%2B3xjQYQIiqbgEfy%2FW8XcekCs");
+            string html = d.ToString();
+            Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
+            html = songti.Replace(html, "");
+            Regex zhiti = new Regex("</font>");
+            html = zhiti.Replace(html, "");
+            Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d+(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d+(\.\d+)?)[^<]*</td><td>(<font[^>]*>)?(?<fengshu>\d+(\.\d+)?)[^<]*(</font[^>]*>)?</td><td>\d+(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
+            string result = "";
+            MatchCollection mc = regex.Matches(html);
+            foreach (Match item in mc)
             {
-                return jwc_largetable(studentnum, pwd);
+                GroupCollection gc = item.Groups;
+                result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
             }
+            result = result + "以上";
+            return result;
+        }
+        public string jwc_gradepoint(string studentnum, string pwd)
+        {
+            string sessionresponse = getjwcsession(studentnum, pwd);
+            if (sessionresponse == log_fail_pwd)
+            {
+                return "密码错误，请回复jwc+密码重新绑定密码，如jwc123456";
+            }
+            else if (sessionresponse == log_fail_xh)
+            {
+                return "您输入的学号：" + studentnum + "，长度不正确";
+            }
+            MyHttpHelper e = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
+            e.HttpGet();
+            string html = e.ToString();
+            Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
+            return jidian.Match(html).Groups["jidian"].Value;
         }
         public string jwc_classtable(string studentnum, string pwd)
         {
             return "今天并没有安排课程，享受你的暑假吧！";
-            if (getjwcsession(studentnum, pwd) == log_fail_pwd)
+            string sessionresponse = getjwcsession(studentnum, pwd);
+            if (sessionresponse == log_fail_pwd)
             {
                 return "密码错误，请回复jwc+密码重新绑定密码，如jwc123456";
+            }
+            else if (sessionresponse == log_fail_xh)
+            {
+                return "您输入的学号：" + studentnum + "，长度不正确";
             }
             MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/E_SelectCourse/ScInFormation/syllabus.aspx");
             d.HttpPost("__VIEWSTATE=%2FwEPDwUKLTg3NzgzODIwNw9kFgICAQ9kFgICAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQhZZWFyVGVybR4ORGF0YVZhbHVlRmllbGQFAnNtHgtfIURhdGFCb3VuZGdkEBUCBTIwMTcxBTIwMTYyFQIJ5LiL5a2m5pyfCeacrOWtpuacnxQrAwJnZ2RkZNO%2Fri3X13dLfsVR9NFAAfI1ATzP&selyeartermflag=%E4%B8%8B%E5%AD%A6%E6%9C%9F&bttn_search=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWBAKX%2B67KDQKukO%2FqDwLJpuDqDwK1man8CYWGxTfqcteijecSaCWqU1U3a0ll");
@@ -160,6 +180,10 @@ namespace WeChatMVC.Controllers
         }
         private string getjwcsession(string studentnum, string pwd)
         {
+            if (studentnum.Length != 8)
+            {
+                return log_fail_xh;
+            }
             MyHttpHelper a = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
             a.HttpGet();
             MyHttpHelper b = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/Base/VerifyCode.aspx");

@@ -29,6 +29,7 @@ namespace WeChatMVC.Models
         public static string hualitong_love = "<a href=\"http://dvomg.xiuzan001.cn/marketing/9zgn84240qZp.html\">花一分钟了解“卿卿如晤”</a>\n\n<a href=\"http://www.yingkebao.top/f/58b243fae7aea92b7a2f2cad\">点击填写表白信</a>/玫瑰\n\n<a href=\"http://koudaigou.net/q/u0ipdd\">点击搜索表白信</a>";
         public static string hualitong_helper = "<a href=\"http://msg.weixiao.qq.com/t/91fbdda8c93e3d7de8e1d526de4ab754\">校历查询</a>\n\n<a href=\"http://www.pocketuniversity.cn/index.php/Signin/index/index?media_id=gh_286321331ccb\">早起打卡</a>\n\n<a href=\"http://msg.weixiao.qq.com/t/657cc0da738ced258f154fc88e99f3f0\">计算机等级成绩</a>";
         public static string hualitong_welcome = "Hey~这里是主页君\n\\(￣︶￣*\\))有眼光的你关注了个非常有用的公众号呦 ~么么哒~\n\n 选择“四维口袋”，点击“一键课表”或者“一键成绩”可以进行初始绑定哦，以后就能一键查询成绩和当天课表啦 ~~\n\n  由于公众号正在建设中，更多功能的推出请关注我们的后期推送";
+
         public UserRequest(XmlDocument doc)
         {
             XmlElement xe = doc.DocumentElement;

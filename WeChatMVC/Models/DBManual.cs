@@ -61,7 +61,7 @@ namespace WeChatMVC.Models
                 db.SubmitChanges();
             }
         }
-        public static string GetGrade(string wechat_id)
+        public static string GetGradePoint(string wechat_id)
         {
             using (HualitongDBDataContext db = new HualitongDBDataContext())
             {
@@ -79,6 +79,44 @@ namespace WeChatMVC.Models
                     {
                         return "请输入xh+您的学号来绑定学号，如xh10161000";
                     }
+                    if (studentnum.Length != 8)
+                    {
+                        return "您输入的学号：" + studentnum + "，长度不正确";
+                    }
+                    if (jwpwd == null)
+                    {
+                        return "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
+                    }
+                    else
+                    {
+                        APIController api = new APIController();
+                        return api.jwc_gradepoint(studentnum, jwpwd);
+                    }
+                }
+            }
+        }
+        public static string GetGradeFromSmallTable(string wechat_id)
+        {
+            using (HualitongDBDataContext db = new HualitongDBDataContext())
+            {
+                var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
+                if (hasexistdate == null)
+                {
+                    AddIntoUsers(wechat_id);
+                    return "请输入xh+您的学号来绑定学号，如xh10161000";
+                }
+                else
+                {
+                    string jwpwd = hasexistdate.jw_pwd;
+                    string studentnum = hasexistdate.student_num;
+                    if (studentnum == null)
+                    {
+                        return "请输入xh+您的学号来绑定学号，如xh10161000";
+                    }
+                    if (studentnum.Length != 8)
+                    {
+                        return "您输入的学号：" + studentnum + "，长度不正确";
+                    }
                     if (jwpwd == null)
                     {
                         return "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
@@ -88,6 +126,40 @@ namespace WeChatMVC.Models
                         APIController api = new APIController();
                         return api.jwc_smarttable(studentnum, jwpwd);
                     } 
+                }
+            }
+        }
+        public static string GetGradeFromBigTable(string wechat_id)
+        {
+            using (HualitongDBDataContext db = new HualitongDBDataContext())
+            {
+                var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
+                if (hasexistdate == null)
+                {
+                    AddIntoUsers(wechat_id);
+                    return "请输入xh+您的学号来绑定学号，如xh10161000";
+                }
+                else
+                {
+                    string jwpwd = hasexistdate.jw_pwd;
+                    string studentnum = hasexistdate.student_num;
+                    if (studentnum == null)
+                    {
+                        return "请输入xh+您的学号来绑定学号，如xh10161000";
+                    }
+                    if (studentnum.Length != 8)
+                    {
+                        return "您输入的学号：" + studentnum + "，长度不正确";
+                    }
+                    if (jwpwd == null)
+                    {
+                        return "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
+                    }
+                    else
+                    {
+                        APIController api = new APIController();
+                        return api.jwc_largetable(studentnum, jwpwd);
+                    }
                 }
             }
         }
@@ -108,6 +180,10 @@ namespace WeChatMVC.Models
                     if (studentnum == null)
                     {
                         return "请输入xh+您的学号来绑定学号，如xh10161000";
+                    }
+                    if (studentnum.Length != 8)
+                    {
+                        return "您输入的学号：" + studentnum + "，长度不正确";
                     }
                     if (jwpwd == null)
                     {

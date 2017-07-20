@@ -43,9 +43,13 @@ namespace WeChatMVC.Controllers
                         case "hualitong_changestudentnum":
                             return userrequest.Get_Reply(UserRequest.hualitong_changestudentnum);
                         case "hualitong_grade":
-                            return userrequest.Get_Reply(DBManual.GetGrade(userrequest.FromUserName));
+                            return userrequest.Get_Reply(DBManual.GetGradeFromSmallTable(userrequest.FromUserName));
                         case "hualitong_classtable":
                             return userrequest.Get_Reply(DBManual.GetClassGrade(userrequest.FromUserName));
+                        case "hualitong_pj":
+                            return userrequest.Get_Reply("现在还没到评教时间哦～");
+                        case "hualitong_more":
+                            return userrequest.Get_Reply("查询成绩大表请回复：成绩大表\n查询绩点请回复：绩点\n查询完整课表请回复：完整课表");
                         default:
                             return userrequest.Get_Reply("功能还在开发中，敬请期待~");
                     }
@@ -58,7 +62,20 @@ namespace WeChatMVC.Controllers
                 else
                 {
                     string message = userrequest.Content;
-                    if (message.Substring(0, DBManual.xhmes.Length) == DBManual.xhmes)
+
+                    if (message == "成绩大表")
+                    {
+                        return userrequest.Get_Reply(DBManual.GetGradeFromBigTable(userrequest.FromUserName));
+                    }
+                    else if (message == "绩点")
+                    {
+                        return userrequest.Get_Reply(DBManual.GetGradePoint(userrequest.FromUserName));
+                    }
+                    else if (message == "完整课表")
+                    {
+                        return userrequest.Get_Reply("内部测试中，即将开放!");
+                    }
+                    else if (message.Substring(0, DBManual.xhmes.Length) == DBManual.xhmes)
                     {
                         DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.xhmes.Length), userrequest.FromUserName, DBManual.xhmes);
                         return userrequest.Get_Reply("学号已修改，现在您绑定的学号为：" + message.Substring(DBManual.xhmes.Length));
