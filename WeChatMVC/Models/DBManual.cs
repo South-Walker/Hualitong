@@ -12,12 +12,6 @@ namespace WeChatMVC.Models
     {
         public static string xhmes = "xh";
         public static string jwcmes = "jwc";
-        public delegate string DBManualDel(string studentid,string pwd);
-        public static APIController api = new APIController();
-        public static DBManualDel lagertable = new DBManualDel(api.jwc_largetable);
-        public static DBManualDel smalltable = new DBManualDel(api.jwc_smarttable);
-        public static DBManualDel gradepoint = new DBManualDel(api.jwc_gradepoint);
-        public static DBManualDel classtable = new DBManualDel(api.jwc_classtable);
         public static void AddIntoUsers(string thiswechat_id)
         {
             using (HualitongDBDataContext db = new HualitongDBDataContext())
@@ -67,7 +61,7 @@ namespace WeChatMVC.Models
                 db.SubmitChanges();
             }
         }
-        public static string SelectFromJwc(string wechat_id, DBManualDel task)
+        public static string SelectFromJwc(string wechat_id, APIController.CrawlerDetail detail)
         {
             using (HualitongDBDataContext db = new HualitongDBDataContext())
             {
@@ -95,7 +89,7 @@ namespace WeChatMVC.Models
                     }
                     else
                     {
-                        return task(studentnum, jwpwd);
+                        return APIController.CrawlerFromJwc(studentnum, jwpwd, detail);
                     }
                 }
             }

@@ -43,9 +43,9 @@ namespace WeChatMVC.Controllers
                         case "hualitong_changestudentnum":
                             return userrequest.Get_Reply(UserRequest.hualitong_changestudentnum);
                         case "hualitong_grade":
-                            return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, DBManual.smalltable));
+                            return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, APIController.smalltable));
                         case "hualitong_classtable":
-                            return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, DBManual.classtable));
+                            return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, APIController.classtable));
                         case "hualitong_pj":
                             return userrequest.Get_Reply("现在还没到评教时间哦～");
                         case "hualitong_more":
@@ -65,11 +65,11 @@ namespace WeChatMVC.Controllers
 
                     if (message == "成绩大表")
                     {
-                        return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, DBManual.lagertable));
+                        return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, APIController.largetable));
                     }
                     else if (message == "绩点")
                     {
-                        return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, DBManual.smalltable));
+                        return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, APIController.gradepoint));
                     }
                     else if (message == "完整课表")
                     {
