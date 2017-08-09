@@ -13,16 +13,16 @@ namespace WeChatMVC.Models
         /*
          * 所有Get.*_Relpy的函数，都返回直接能回复的xml格式字符
          */
-        public string Event;
-        public string EventKey;
-        public string ToUserName;
-        public string FromUserName;
-        public string CreateTime;
-        public string MsgType;
-        public string Content;
-        public string MsgId;
-        public string PicUrl;
-        public string MediaId;
+        public string Event = "";
+        public string EventKey = "";
+        public string ToUserName = "";
+        public string FromUserName = "";
+        public string CreateTime = "";
+        public string MsgType = "";
+        public string Content = "";
+        public string MsgId = "";
+        public string PicUrl = "";
+        public string MediaId = "";
         public string studentid = null;//同上
         public string ty_pwd = null;//同上
         public static string hualitong_changestudentnum = "想要更改绑定吗？后台回复xh+学号，如xh10161000，重新绑定学号吧～";
@@ -35,13 +35,19 @@ namespace WeChatMVC.Models
             XmlElement xe = doc.DocumentElement;
             fillclass(xe);
         }
-        private void Save_log(XmlElement xe)//有误
+
+        public static void Save_log(string xml)
+        {
+            FileStream fs = new FileStream(@"C:\Users\Administrator\Desktop\wechatlog.txt", FileMode.Append, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.Write(xml + "\r\n");
+            sw.Flush();
+            fs.Close();
+        }
+        private static void Save_log(XmlElement xe)//有误
         {
             string xml = xe.Value;
-            FileStream fs = new FileStream(@"C:\Users\Administrator\Desktop\test.txt", FileMode.Append, FileAccess.Write);
-            StreamWriter sw = new StreamWriter(fs);
-            sw.WriteLine(xml);
-            sw.Flush();
+            Save_log(xml);
         }
         /// <summary>
         /// 返回的值中0表示用户没有绑定学号，
@@ -61,6 +67,14 @@ namespace WeChatMVC.Models
         {
             StreamReader sr = new StreamReader(xmlstream);
             string xml = sr.ReadToEnd();
+            try
+            {
+                Save_log(xml);
+            }
+            catch
+            {
+
+            }
             XmlDocument xmldoc = new XmlDocument();
             xmldoc.LoadXml(xml);
             XmlElement xe = xmldoc.DocumentElement;
@@ -97,10 +111,14 @@ namespace WeChatMVC.Models
         }
         public bool IsSubscribe()
         {
+            if (Event == "" || Event == null)
+                return false;
             return Event == "subscribe";
         }
         public bool IsClick()
         {
+            if (Event == "" || Event == null)
+                return false;
             return Event == "CLICK";
         }
         public string Get_MJ_Reply(DateTime buyday, DateTime ticketday, string origination, string destination)

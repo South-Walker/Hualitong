@@ -65,6 +65,7 @@ namespace WeChatMVC.Controllers
         public static CrawlerDetail smalltable = new CrawlerDetail(jwc_smarttable);
         public static CrawlerDetail gradepoint = new CrawlerDetail(jwc_gradepoint);
         public static CrawlerDetail classtable = new CrawlerDetail(jwc_classtable);
+        public static CrawlerDetail examtable = new CrawlerDetail(jwc_examtable);
         private const string log_success = "success";
         private const string log_fail_pwd = "pwd";
         private const string log_fail_vc = "vc";
@@ -108,7 +109,7 @@ namespace WeChatMVC.Controllers
                 GroupCollection gc = item.Groups;
                 result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
             }
-            result = result + "以上";
+            result = result + "以上为本学期成绩";
             return result;
         }
         public static string jwc_gradepoint()
@@ -152,12 +153,28 @@ namespace WeChatMVC.Controllers
                 return "今天并没有安排课程！";
             return result;
         }
+        public static string jwc_examtable()
+        {
+            MyHttpHelper d = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_TestTableDetail.aspx?key=0");
+            d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwULLTE2NTU5MjUyNDUPZBYCAgEPZBYCAgEPZBYIAgEPZBYCZg9kFgQCAQ8QZBAVDQnor7fpgInmi6kFMjAxNzEFMjAxNjIFMjAxNjEFMjAxNTIFMjAxNTEFMjAxNDIFMjAxNDEFMjAxMzIFMjAxMzEFMjAxMjIFMjAxMjEFMjAxMTIVDQnor7fpgInmi6kFMjAxNzEFMjAxNjIFMjAxNjEFMjAxNTIFMjAxNTEFMjAxNDIFMjAxNDEFMjAxMzIFMjAxMzEFMjAxMjIFMjAxMjEFMjAxMTIUKwMNZ2dnZ2dnZ2dnZ2dnZ2RkAggPEGRkFgFmZAICD2QWAmYPZBYCZg8PFgIeBFRleHQFMTIwMTctMjAxOOWtpuW5tOesrDHlrabmnJ%2FnmoTogIPor5XooajkuI3lrZjlnKjvvIFkZAIDD2QWAmYPZBYGZg8PFgIfAGVkZAICDw8WAh8AZWRkAgQPDxYCHwBlZGQCBA9kFgJmD2QWAmYPPCsACwEADxYCHgdWaXNpYmxlaGRkZC74a7y14FQ9u95U4X%2BZFk%2BC6jss&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&RdbCourse=%E4%B8%AA%E4%BA%BA%E8%80%83%E8%AF%95%E8%A1%A8&__EVENTVALIDATION=%2FwEWEgLmo53ZCgLekp65DQKA%2BtHTAQKP%2BqX0CAKA%2BqX0CAKP%2BokJAoD6iQkCj%2FqdogsCgPqdogsCj%2FrhxgICgPrhxgICj%2Fr1mwoCgPr1mwoCj%2FrZvAUC2sfb1QYCuaHTqAgCj%2FnpnQ4CwZTn4whWHkuO6LHUmnWxc9LhgAqJGND3xA%3D%3D");
+            string html = d.ToString();
+            Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
+            html = songti.Replace(html, "");
+            Regex zhiti = new Regex("</font>");
+            html = zhiti.Replace(html, "");
+            //缺个正则
+            return html;
+        }
         public static string CrawlerFromJwc(string studentnum, string pwd, CrawlerDetail detail)
         {
             if (studentnum.Length != 8)
             {
                 return log_fail_xh;
             }
+            if (Regex.IsMatch(pwd, "^[0-9]*$"))
+            {
+                return "您的密码过于简单，请登录教务处信息网更改后再绑定";
+            } 
             MyHttpHelper a = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
             a.HttpGet();
             MyHttpHelper b = new MyHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/Base/VerifyCode.aspx");
@@ -173,7 +190,7 @@ namespace WeChatMVC.Controllers
             }
             else if (MyHttpHelper.regexpwdfail.IsMatch(html))
             {
-                return log_fail_pwd;
+                return "您现在设置的教务处密码：" + pwd + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
             }
             else if (MyHttpHelper.regexvcfail.IsMatch(html))
             {

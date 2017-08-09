@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaiduMapController.cs" />
+    <Compile Include="Controllers\TestAPIController.cs" />
     <Compile Include="Models\DBManual.cs" />
     <Compile Include="Models\HualitongDB.designer.cs">
       <AutoGen>True</AutoGen>
@@ -155,7 +156,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\API\" />
-    <Folder Include="Views\WeChat\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
