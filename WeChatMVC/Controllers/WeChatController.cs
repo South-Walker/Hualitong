@@ -100,7 +100,6 @@ namespace WeChatMVC.Controllers
                 }
                 catch(Exception e)
                 {
-                    UserRequest.Save_log(e.ToString());
                     return "success";
                 }
             }

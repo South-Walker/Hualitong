@@ -75,6 +75,7 @@ namespace WeChatMVC.Models
                 {
                     string jwpwd = hasexistdate.jw_pwd;
                     string studentnum = hasexistdate.student_num;
+                    jwpwd = HttpUtility.UrlEncode(jwpwd);
                     if (studentnum == null)
                     {
                         return "请输入xh+您的学号来绑定学号，如xh10161000";
