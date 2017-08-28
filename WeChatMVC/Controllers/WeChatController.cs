@@ -24,6 +24,8 @@ namespace WeChatMVC.Controllers
         // GET: WeChat
         public string Index() //回复全都是xml格式的string
         {
+            //测试语句
+            //return APIController.CrawlerFromJwc("10150111", "***ak96101", APIController.jwc_classtable);
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"];
