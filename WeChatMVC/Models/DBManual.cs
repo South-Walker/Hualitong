@@ -61,40 +61,32 @@ namespace WeChatMVC.Models
                 db.SubmitChanges();
             }
         }
-        public static string SelectFromJwc(string wechat_id, APIController.CrawlerDetail detail)
+        private static StudentInfo selectuser(string wechat_id)
         {
+            StudentInfo result = new StudentInfo();
             using (HualitongDBDataContext db = new HualitongDBDataContext())
             {
                 var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
                 if (hasexistdate == null)
                 {
                     AddIntoUsers(wechat_id);
-                    return "请输入xh+您的学号来绑定学号，如xh10161000";
+                    result.hasexistdate = false;
                 }
                 else
                 {
-                    string jwpwd = hasexistdate.jw_pwd;
-                    string studentnum = hasexistdate.student_num;
-                    jwpwd = HttpUtility.UrlEncode(jwpwd);
-                    if (studentnum == null)
-                    {
-                        return "请输入xh+您的学号来绑定学号，如xh10161000";
-                    }
-                    if (studentnum.Length != 8)
-                    {
-                        return "您输入的学号：" + studentnum + "，长度不正确";
-                    }
-                    if (jwpwd == null)
-                    {
-                        return "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
-                    }
-                    else
-                    {
-                        return APIController.CrawlerFromJwc(studentnum, jwpwd, detail);
-                    }
+                    result.pwd = HttpUtility.UrlEncode(hasexistdate.jw_pwd);
+                    result.studentnum = hasexistdate.student_num;
                 }
             }
-
+            result.Check();
+            return result;
+        }
+        public static string SelectFromJwc(string wechat_id, APIController.CrawlerDetail detail)
+        {
+            StudentInfo userinfo = selectuser(wechat_id);
+            if (userinfo.errormessage == "")
+                return userinfo.errormessage;
+            return APIController.CrawlerFromJwc(userinfo, detail);
         }
     }
 }

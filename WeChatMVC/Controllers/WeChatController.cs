@@ -100,7 +100,7 @@ namespace WeChatMVC.Controllers
                     return "success";
                     #endregion}
                 }
-                catch(Exception e)
+                catch
                 {
                     return "success";
                 }

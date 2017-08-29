@@ -10,56 +10,6 @@ namespace WeChatMVC.Controllers
     public class APIController : BaseController
     {
         // GET: API
-        public JsonResult ty(string studentnum, string pwd)
-        {
-            string post = string.Format("__EVENTTARGET = &__EVENTARGUMENT = &__LASTFOCUS = &__VIEWSTATE =% 2FwEPDwULLTIxMjk4Nzk4MzUPZBYCZg9kFghmDxBkZBYBZmQCBQ8PFgIeBFRleHRlZGQCBg8PFgIfAAUSMjAxNC85LzE2IDExOjI1OjUyZGQCBw8PFgIfAAUSMjAzNC85LzE2IDExOjI1OjUyZGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgEFBWJ0bm9rg7wsmKWoIGv % 2B2o6SEkUuPN0q80w % 3D & dlljs = st & " +
-                "txtuser={0}&txtpwd={1}&__VIEWSTATEGENERATOR=5B21F7B0&__EVENTVALIDATION=%2FwEWCAKAvaGBDAKBwaG%2FAQLMrvvQDQLd8tGoBALWwdnoCALB2tiCDgKd%2B7q4BwL9kpmqCm3geVz7Uj28fz9x4hImTVbLX%2BiL&btnok.x=0&btnok.y=0",
-                studentnum, pwd);
-
-            MyHttpHelper httphelper = new MyHttpHelper(@"http://59.78.92.38:8888/sportscore/");
-            httphelper.HttpGet();
-            httphelper = new MyHttpHelper(@"http://59.78.92.38:8888/sportscore/");
-            httphelper.HttpPost(post);
-            httphelper = new MyHttpHelper(@"http://59.78.92.38:8888/sportscore/stScore.aspx");
-            httphelper.HttpGet();
-
-            Regex re = new Regex("<span id=\"lblname\">\\s*(?<name>[^\\s]*)\\s*</span>[\\s\\S]*?<span id=\"lblmsg\">[\\s\\S]*?早操：[\\s\\S]*?>(?<morningexercises>\\d+)<[\\s\\S]*?课外活动1：[\\s\\S]*?>(?<outclassactivite1>\\d+)<[\\s\\S]*?</span>");
-            Match match = re.Match(httphelper.ToString());
-            GroupCollection gc = match.Groups;
-            string name = gc["name"].Value;
-            string morningexercise = gc["morningexercises"].Value;
-            string outclassactivite1 = gc["outclassactivite1"].Value;
-            string reply = name + "同学，您晨跑次数为：" + morningexercise + ",课外活动次数为：" + outclassactivite1;
-
-
-            JsonResult json = new JsonResult();
-            var data = new object[3];
-
-            data[0] = name;
-            data[1] = morningexercise;
-            data[2] = outclassactivite1; 
-            json.Data = data;
-            json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-            return json;
-        }
-        public JsonResult lib()
-        {
-            Regex re = new Regex("(?<=>)\\d+(?=<)");
-            MyHttpHelper library = new MyHttpHelper(@"http://lib.ecust.edu.cn:8081/gateseat/lrp.aspx");
-            library.HttpGet();
-            MatchCollection mc = re.Matches(library.ToString());
-            JsonResult json = new JsonResult();
-            var data = new object[6];
-            for (int i = 1; i <= 6; i++)
-            {
-                var used = mc[2 * i - 2].Value;
-                var remain = mc[2 * i - 1].Value;
-                data[i - 1] = new { used, remain };
-            }
-            json.Data = data;
-            json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-            return json;
-        }
         public delegate string CrawlerDetail();
         public static CrawlerDetail largetable = new CrawlerDetail(jwc_largetable);
         public static CrawlerDetail smalltable = new CrawlerDetail(jwc_smarttable);
@@ -89,7 +39,7 @@ namespace WeChatMVC.Controllers
                 result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
             }
             Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
-            result = result + "平均绩点："+ jidian.Match(html).Groups["jidian"].Value; ;
+            result = result + "平均绩点："+ jidian.Match(html).Groups["jidian"].Value;
             return result;
         }
         public static string jwc_smarttable()
@@ -147,8 +97,10 @@ namespace WeChatMVC.Controllers
             //缺个正则
             return html;
         }
-        public static string CrawlerFromJwc(string studentnum, string pwd, CrawlerDetail detail)
+        public static string CrawlerFromJwc(StudentInfo userinfo, CrawlerDetail detail)
         {
+            string studentnum = userinfo.studentnum;
+            string pwd = userinfo.pwd;
             if (studentnum.Length != 8)
             {
                 return log_fail_xh;
@@ -176,187 +128,9 @@ namespace WeChatMVC.Controllers
             }
             else if (MyHttpHelper.regexvcfail.IsMatch(html))
             {
-                return CrawlerFromJwc(studentnum, pwd, detail);
+                return CrawlerFromJwc(userinfo, detail);
             }
             return "unknownfail";
-        }
-    }
-    class ClassTableob
-    {
-        public static List<List<Classob>> ClassTable = new List<List<Classob>>();
-        public static DateTime TermBegin = new DateTime(2017, 9, 11);
-        public ClassTableob(string html)
-        {
-            if (ClassTable.Count == 0)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    List<Classob> list = new List<Classob>();
-                    ClassTable.Add(list);
-                }
-            }
-            Regex regex = new Regex("<td[^>]*>(?<class>[^<]*)</td><td[^>]*>\\d+</td><td[^>]*>(?<teacher>[^<]*)</td><td[^>]*><font size=1>(?<date>[^<]*)</td><td [^>]*><font size=1>(?<room>[^<]*)</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td>");
-            MatchCollection mc = regex.Matches(html);
-            foreach (Match m in mc)
-            {
-                GroupCollection gc = m.Groups;
-                string teacher = gc["teacher"].Value;
-                string classname = gc["class"].Value;
-                string date = gc["date"].Value;
-                string room = gc["room"].Value;
-                Classob now = new Classob(teacher, classname, date, room);
-                ClassTable[now.weekcode].Add(now);
-            }
-            sort();
-        }
-        private void sort()
-        {
-            foreach (List<Classob> list in ClassTable)
-            {
-                if (list.Count <= 1)
-                    continue;
-                sortlist(list, 0, list.Count - 1);
-            }
-        }
-        private void sortlist(List<Classob> list, int begin, int end)
-        {
-            Classob temp;
-            if (end <= begin)
-                return;
-            int a = begin; int b = end;
-            while (b != a)
-            {
-                while (Classob.isAearlier(list[a], list[b]) && b != a)
-                {
-                    a++;
-                }
-                temp = list[a];
-                list[a] = list[b];
-                list[b] = temp;
-                while (Classob.isAearlier(list[a], list[b]) && b != a)
-                {
-                    b--;
-                }
-                temp = list[a];
-                list[a] = list[b];
-                list[b] = temp;
-            }
-            sortlist(list, begin, a - 1);
-            sortlist(list, b + 1, end);
-        }
-        private static int getweeknum(DateTime today)
-        {
-            int days = (today - TermBegin).Days;
-            return days / 7 + 1;
-        }
-        private static int getweekcode(DateTime today)
-        {
-            return (int)today.DayOfWeek;
-        }
-        public List<Classob> GetClassToday(DateTime today)
-        {
-            List<Classob> result = new List<Classob>();
-            int weekcode = getweekcode(today);
-            int weeknum = getweeknum(today);
-            foreach (Classob clas in ClassTable[weekcode])
-            {
-                if (clas.isToday(weeknum))
-                    result.Add(clas);
-            }
-            return result;
-        }
-        public string GetStringToday(DateTime today)
-        {
-            string result = "";
-            List<Classob> todayclasses = GetClassToday(today);
-            for (int i = 0; i < todayclasses.Count; i++)
-            {
-                //最终呈现给用户的字符处理好看一点
-                result += todayclasses[i].classname;
-            }
-            if (result == "")
-                return "今天并没有安排课程！";
-            return result;
-        }
-    }
-    class Classob
-    {
-        public string teacher = "";
-        public string classname = "";
-        public int timebegin = 0;
-        public int timeend = 11;
-        public int datebegin = 0;
-        public int dateend = 20;
-        public string weekday = "";
-        public int weekcode = 0;
-        public string room = "";
-        public string quanorsuang = "";
-        public bool isshuang = true;
-        public bool isdan = true;
-        public Classob(string thisteacher, string thisclassname, string thisdate, string thisroom)
-        {
-            teacher = thisteacher;
-            classname = thisclassname;
-            room = thisroom;
-            Regex regex = new Regex("(?<weekday>[^\\s]*)\\s+(?<timebegin>\\d+)-(?<timeend>\\d+)节\\s+(?<datebegin>\\d+)-(?<dateend>\\d+)(?<quanorshuang>.*)$");
-            GroupCollection gc = regex.Match(thisdate).Groups;
-            timebegin = Convert.ToInt32(gc["timebegin"].Value);
-            timeend = Convert.ToInt32(gc["timeend"].Value);
-            datebegin = Convert.ToInt32(gc["datebegin"].Value);
-            dateend = Convert.ToInt32(gc["dateend"].Value);
-            weekday = gc["weekday"].Value;
-            quanorsuang = gc["quanorshuang"].Value;
-            switch (quanorsuang)
-            {
-                case "双周":
-                    isdan = false;
-                    break;
-                case "单周":
-                    isshuang = false;
-                    break;
-                default:
-                    break;
-            }
-            switch (weekday)
-            {
-                case "周一":
-                    weekcode = 1;
-                    break;
-                case "周二":
-                    weekcode = 2;
-                    break;
-                case "周三":
-                    weekcode = 3;
-                    break;
-                case "周四":
-                    weekcode = 4;
-                    break;
-                case "周五":
-                    weekcode = 5;
-                    break;
-                case "周六":
-                    weekcode = 6;
-                    break;
-                default:
-                    weekcode = 0;
-                    break;
-            }
-        }
-        public static bool isAearlier(Classob a, Classob b)
-        {
-            return (a.timebegin <= b.timebegin) ? true : false;
-        }
-        public bool isToday(int weeknum)
-        {
-            if (weeknum % 2 == 1 && isdan)
-            {
-                return true;
-            }
-            else if (weeknum % 2 == 0 && isshuang)
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

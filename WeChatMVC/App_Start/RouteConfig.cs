@@ -33,6 +33,12 @@ namespace WeChatMVC
                 );
 
             routes.MapRoute(
+                name: "JSONAPI",
+                url: "json/{action}/{openid}",
+                defaults: new { controller = "json" }
+                );
+
+            routes.MapRoute(
                 name: "FileUpLoad",
                 url: "fileupload/{action}",
                 defaults: new { controller = "fileupload", action = "index", id = UrlParameter.Optional }

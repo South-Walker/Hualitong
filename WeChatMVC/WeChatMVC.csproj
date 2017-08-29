@@ -111,7 +111,8 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaiduMapController.cs" />
-    <Compile Include="Controllers\TestAPIController.cs" />
+    <Compile Include="Controllers\JSONController.cs" />
+    <Compile Include="Models\ClassTable.cs" />
     <Compile Include="Models\DBManual.cs" />
     <Compile Include="Models\HualitongDB.designer.cs">
       <AutoGen>True</AutoGen>
@@ -120,6 +121,7 @@
     </Compile>
     <Compile Include="Models\MyHttpHelper.cs" />
     <Compile Include="Models\Task.cs" />
+    <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\UserRequest.cs" />
     <Compile Include="Controllers\APIController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -155,7 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\API\" />
+    <Folder Include="Views\JSON\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
