@@ -11,6 +11,7 @@ namespace WeChatMVC.Models
         public string pwd { get; set; }
         public bool hasexistdate = true;
         public string errormessage = "";
+        public bool IsSuccess = false;
         public StudentInfo(string thisstudentnum,string thispwd)
         {
             studentnum = thisstudentnum;
@@ -34,6 +35,7 @@ namespace WeChatMVC.Models
             {
                 errormessage = "请输入jwc+您的教务处密码来解锁此功能，如jwc123456";
             }
+            IsSuccess = true;
         }
     }
 }

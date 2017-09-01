@@ -119,6 +119,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>HualitongDB.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Models\JWCHttpHelper.cs" />
     <Compile Include="Models\MyHttpHelper.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Models\UserInfo.cs" />
@@ -130,7 +131,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\VerificationCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

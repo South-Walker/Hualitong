@@ -81,12 +81,13 @@ namespace WeChatMVC.Models
             result.Check();
             return result;
         }
-        public static string SelectFromJwc(string wechat_id, APIController.CrawlerDetail detail)
+        public static string SelectFromJwc(string wechat_id, JWCHttpHelper.CrawlerDetail detail)
         {
             StudentInfo userinfo = selectuser(wechat_id);
-            if (userinfo.errormessage == "")
+            if (userinfo.IsSuccess)
+                return APIController.CrawlerFromJwc(userinfo, detail);
+            else
                 return userinfo.errormessage;
-            return APIController.CrawlerFromJwc(userinfo, detail);
         }
     }
 }

@@ -6,15 +6,12 @@ using System.Text.RegularExpressions;
 
 namespace WeChatMVC.Models
 {
-    class MyHttpHelper
+    public class MyHttpHelper
     {
-        public static Regex regexsuccess = new Regex("您好！");
-        public static Regex regexpwdfail = new Regex("密码错误");
-        public static Regex regexvcfail = new Regex("验证码不正确！");
         static CookieContainer cookiecontainer = new CookieContainer();
         static CookieCollection cookiecollection = new CookieCollection();
-        HttpWebRequest request;
-        HttpWebResponse response;
+        protected HttpWebRequest request;
+        protected HttpWebResponse response;
         string html = string.Empty;
         public MyHttpHelper(string url)
         {
@@ -30,13 +27,6 @@ namespace WeChatMVC.Models
         public void HttpGet()
         {
             GetResponse();
-        }
-        public Bitmap HttpGetImage()
-        {
-            response = (HttpWebResponse)request.GetResponse();
-            Stream stream = response.GetResponseStream();
-            Bitmap bitmap = (Bitmap)Image.FromStream(stream);
-            return bitmap;
         }
         public void HttpPost(string postcontent)
         {
