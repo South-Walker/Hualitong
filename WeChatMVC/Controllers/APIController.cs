@@ -15,7 +15,7 @@ namespace WeChatMVC.Controllers
             JWCHttpHelper.Login(studentnum, pwd);
             if (JWCHttpHelper.IsLogin)
             {
-                return detail();
+                return (string)detail();
             }
             else
             {

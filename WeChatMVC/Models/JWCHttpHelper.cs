@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
+using WeChatMVC.Models;
+using System.Web.Mvc;
 
 namespace WeChatMVC.Models
 {
@@ -14,7 +16,7 @@ namespace WeChatMVC.Models
         public static Regex regexvcfail = new Regex("验证码不正确！");
         public static bool IsLogin = false;
         public static string ErrorMsg = "";
-        public delegate string CrawlerDetail();
+        public delegate object CrawlerDetail(bool isjson = false);
         public static CrawlerDetail largetable = new CrawlerDetail(jwc_largetable);
         public static CrawlerDetail smalltable = new CrawlerDetail(jwc_smarttable);
         public static CrawlerDetail gradepoint = new CrawlerDetail(jwc_gradepoint);
@@ -24,7 +26,7 @@ namespace WeChatMVC.Models
         private const string log_fail_pwd = "pwd";
         private const string log_fail_vc = "vc";
         private const string log_fail_xh = "xh";
-        public static string jwc_largetable()
+        public static object jwc_largetable(bool isjson = false)
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
             d.HttpGet();
@@ -37,16 +39,36 @@ namespace WeChatMVC.Models
                 );
             string result = "";
             MatchCollection mc = regex.Matches(html);
-            foreach (Match item in mc)
+            if (!isjson)
             {
-                GroupCollection gc = item.Groups;
-                result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                foreach (Match item in mc)
+                {
+                    GroupCollection gc = item.Groups;
+                    result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                }
+                Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
+                result = result + "平均绩点：" + jidian.Match(html).Groups["jidian"].Value;
+                return result;
             }
-            Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
-            result = result + "平均绩点：" + jidian.Match(html).Groups["jidian"].Value;
-            return result;
+            else
+            {
+                Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
+                JsonResult json = new JsonResult();
+                var data = new object[mc.Count + 1];
+                data[0] = jidian.Match(html).Groups["jidian"].Value;
+                for (int i = 1; i <= mc.Count; i++)
+                {
+                    GroupCollection gc = mc[i - 1].Groups;
+                    var kemu = gc["kemu"].Value;
+                    var fengshu = gc["fengshu"].Value;
+                    data[i] = new { kemu, fengshu };
+                }
+                json.Data = data;
+                json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+                return json;
+            }
         }
-        public static string jwc_smarttable()
+        public static object jwc_smarttable(bool isjson = false)
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_ScoreTableYearTerm.aspx?i=0%3a26%3a46");
             d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM1MDcwMDg1MQ9kFgICAQ9kFgICAQ9kFgZmD2QWAmYPZBYCAgMPDxYCHgdFbmFibGVkaGRkAgEPZBYCZg9kFgICAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQhUZXJtTmFtZR4ORGF0YVZhbHVlRmllbGQFCFllYXJUZXJtHgtfIURhdGFCb3VuZGdkEBUFFeKAlOKAlOivt%2BmAieaLqeKAlOKAlBYyMDE2LTIwMTflrablubQy5a2m5pyfFjIwMTYtMjAxN%2BWtpuW5tDHlrabmnJ8WMjAxNS0yMDE25a2m5bm0MuWtpuacnxYyMDE1LTIwMTblrablubQx5a2m5pyfFQUBMAUyMDE2MgUyMDE2MQUyMDE1MgUyMDE1MRQrAwVnZ2dnZ2RkAgMPZBYCZg9kFgJmDzwrAAsAZGSDV9YWPjkZzs%2BQA3Jxh1jr8S5yVA%3D%3D&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWCQLCq5zYDAKC5sFXApf3trkEAtjpwosFAo%2F6pfQIAoD6pfQIAo%2F6iQkCgPqJCQLax9vVBk%2F0%2B3xjQYQIiqbgEfy%2FW8XcekCs");
@@ -66,15 +88,21 @@ namespace WeChatMVC.Models
             result = result + "以上为本学期成绩";
             return result;
         }
-        public static string jwc_gradepoint()
+        public static object jwc_gradepoint(bool isjson = false)
         {
             JWCHttpHelper e = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
             e.HttpGet();
             string html = e.ToString();
             Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
-            return jidian.Match(html).Groups["jidian"].Value;
+            if (!isjson)
+                return jidian.Match(html).Groups["jidian"].Value;
+            else
+            {
+                JsonResult json = new JsonResult();
+                return json.ToString();
+            }
         }
-        public static string jwc_classtable()
+        public static object jwc_classtable(bool isjson = false)
         {
             // 功能待启用
             return "今天并没有安排课程，享受你的暑假吧！";
@@ -89,7 +117,7 @@ namespace WeChatMVC.Models
             //启用时日期改为当前时间
             return classtable.GetStringToday(new DateTime(2017, 9, 18));
         }
-        public static string jwc_examtable()
+        public static object jwc_examtable(bool isjson = false)
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_TestTableDetail.aspx?key=0");
             d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwULLTE2NTU5MjUyNDUPZBYCAgEPZBYCAgEPZBYIAgEPZBYCZg9kFgQCAQ8QZBAVDQnor7fpgInmi6kFMjAxNzEFMjAxNjIFMjAxNjEFMjAxNTIFMjAxNTEFMjAxNDIFMjAxNDEFMjAxMzIFMjAxMzEFMjAxMjIFMjAxMjEFMjAxMTIVDQnor7fpgInmi6kFMjAxNzEFMjAxNjIFMjAxNjEFMjAxNTIFMjAxNTEFMjAxNDIFMjAxNDEFMjAxMzIFMjAxMzEFMjAxMjIFMjAxMjEFMjAxMTIUKwMNZ2dnZ2dnZ2dnZ2dnZ2RkAggPEGRkFgFmZAICD2QWAmYPZBYCZg8PFgIeBFRleHQFMTIwMTctMjAxOOWtpuW5tOesrDHlrabmnJ%2FnmoTogIPor5XooajkuI3lrZjlnKjvvIFkZAIDD2QWAmYPZBYGZg8PFgIfAGVkZAICDw8WAh8AZWRkAgQPDxYCHwBlZGQCBA9kFgJmD2QWAmYPPCsACwEADxYCHgdWaXNpYmxlaGRkZC74a7y14FQ9u95U4X%2BZFk%2BC6jss&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&RdbCourse=%E4%B8%AA%E4%BA%BA%E8%80%83%E8%AF%95%E8%A1%A8&__EVENTVALIDATION=%2FwEWEgLmo53ZCgLekp65DQKA%2BtHTAQKP%2BqX0CAKA%2BqX0CAKP%2BokJAoD6iQkCj%2FqdogsCgPqdogsCj%2FrhxgICgPrhxgICj%2Fr1mwoCgPr1mwoCj%2FrZvAUC2sfb1QYCuaHTqAgCj%2FnpnQ4CwZTn4whWHkuO6LHUmnWxc9LhgAqJGND3xA%3D%3D");
@@ -106,7 +134,7 @@ namespace WeChatMVC.Models
         {
 
         }
-        public Bitmap HttpGetImage()
+        private Bitmap HttpGetImage()
         {
             response = (HttpWebResponse)request.GetResponse();
             Stream stream = response.GetResponseStream();
