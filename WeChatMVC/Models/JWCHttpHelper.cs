@@ -80,13 +80,31 @@ namespace WeChatMVC.Models
             Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d+(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d+(\.\d+)?)[^<]*</td><td>(<font[^>]*>)?(?<fengshu>\d+(\.\d+)?)[^<]*(</font[^>]*>)?</td><td>\d+(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
             string result = "";
             MatchCollection mc = regex.Matches(html);
-            foreach (Match item in mc)
+            if (!isjson)
             {
-                GroupCollection gc = item.Groups;
-                result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                foreach (Match item in mc)
+                {
+                    GroupCollection gc = item.Groups;
+                    result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
+                }
+                result = result + "以上为本学期成绩";
+                return result;
             }
-            result = result + "以上为本学期成绩";
-            return result;
+            else
+            {
+                JsonResult json = new JsonResult();
+                var data = new object[mc.Count];
+                for (int i = 0; i < mc.Count; i++)
+                {
+                    GroupCollection gc = mc[i].Groups;
+                    var kemu = gc["kemu"].Value;
+                    var fengshu = gc["fengshu"].Value;
+                    data[i] = new { kemu, fengshu };
+                }
+                json.Data = data;
+                json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+                return json;
+            }
         }
         public static object jwc_gradepoint(bool isjson = false)
         {

@@ -64,11 +64,17 @@ namespace WeChatMVC.Controllers
             json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return json;
         }
-        public JsonResult test()
+        public JsonResult smalltable(string openid)
         {
-            JWCHttpHelper.Login("10150111", "***ak96101");
-                return (JsonResult)JWCHttpHelper.largetable(true);
-
+            StudentInfo info = DBManual.SelectUser(openid);
+            JWCHttpHelper.Login(info.studentnum, info.pwd);
+            return (JsonResult)JWCHttpHelper.smalltable(true);
+        }
+        public JsonResult largetable(string openid)
+        {
+            StudentInfo info = DBManual.SelectUser(openid);
+            JWCHttpHelper.Login(info.studentnum, info.pwd);
+            return (JsonResult)JWCHttpHelper.largetable(true);
         }
     }
 }

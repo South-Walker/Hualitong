@@ -61,7 +61,7 @@ namespace WeChatMVC.Models
                 db.SubmitChanges();
             }
         }
-        private static StudentInfo selectuser(string wechat_id)
+        public static StudentInfo SelectUser(string wechat_id)
         {
             StudentInfo result = new StudentInfo();
             using (HualitongDBDataContext db = new HualitongDBDataContext())
@@ -83,7 +83,7 @@ namespace WeChatMVC.Models
         }
         public static string SelectFromJwc(string wechat_id, JWCHttpHelper.CrawlerDetail detail)
         {
-            StudentInfo userinfo = selectuser(wechat_id);
+            StudentInfo userinfo = SelectUser(wechat_id);
             if (userinfo.IsSuccess)
                 return APIController.CrawlerFromJwc(userinfo, detail);
             else
