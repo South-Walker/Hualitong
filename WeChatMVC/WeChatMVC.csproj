@@ -112,7 +112,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaiduMapController.cs" />
     <Compile Include="Controllers\JSONController.cs" />
-    <Compile Include="Models\ClassTable.cs" />
     <Compile Include="Models\DBManual.cs" />
     <Compile Include="Models\HualitongDB.designer.cs">
       <AutoGen>True</AutoGen>
