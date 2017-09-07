@@ -130,7 +130,7 @@ namespace WeChatMVC.Models
             html = songti.Replace(html, "");
             Regex zhiti = new Regex("</font>");
             html = zhiti.Replace(html, "");
-            ClassTableob classtable = new ClassTableob(html);
+            ClassTableob classtable = new ClassTableob(html, new DateTime(2017, 9, 11));
             //启用时日期改为当前时间
             if (!isjson)
             {
@@ -652,12 +652,14 @@ namespace WeChatMVC.Models
             }
         }
     }
-    public class ClassTableob
+    public struct ClassTableob
     {
-        public static List<List<Classob>> ClassTable = new List<List<Classob>>();
-        public static DateTime TermBegin = new DateTime(2017, 9, 11);
-        public ClassTableob(string html)
+        public List<List<Classob>> ClassTable;
+        public DateTime TermBegin;
+        public ClassTableob(string html,DateTime begin)
         {
+            ClassTable = new List<List<Classob>>();
+            TermBegin = begin;
             if (ClassTable.Count == 0)
             {
                 for (int i = 0; i < 8; i++)
@@ -715,9 +717,9 @@ namespace WeChatMVC.Models
             sortlist(list, begin, a - 1);
             sortlist(list, b + 1, end);
         }
-        private static int getweeknum(DateTime today)
+        private int getweeknum(DateTime today)
         {
-            int days = (today - TermBegin).Days;
+            int days = (today - this.TermBegin).Days;
             return days / 7 + 1;
         }
         private static int getweekcode(DateTime today)
@@ -727,18 +729,7 @@ namespace WeChatMVC.Models
         public JsonResult GetJson()
         {
             JsonResult json = new JsonResult();
-            var data = new object[8];
-            for (int i = 0; i < data.Length; i++)
-            {
-                var thisday = new object[ClassTable[i].Count];
-                for (int j = 0; j < ClassTable[i].Count; j++) 
-                {
-                    Classob now = ClassTable[i][j];
-                    thisday[j] = now;
-                }
-                data[i] = thisday;
-            }
-            json.Data = data;
+            json.Data = this;
             json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return json;
         }
