@@ -1,0 +1,12 @@
+C:\Users\Administrator\Desktop\wechatpost\wechatpost\bin\Debug\wechatpost.exe.config
+C:\Users\Administrator\Desktop\wechatpost\wechatpost\bin\Debug\wechatpost.exe
+C:\Users\Administrator\Desktop\wechatpost\wechatpost\bin\Debug\wechatpost.pdb
+C:\Users\Administrator\Desktop\wechatpost\wechatpost\obj\Debug\wechatpost.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\wechatpost\wechatpost\obj\Debug\wechatpost.exe
+C:\Users\Administrator\Desktop\wechatpost\wechatpost\obj\Debug\wechatpost.pdb
+C:\Users\Administrator\Desktop\华理通\wechatpost\wechatpost\bin\Debug\wechatpost.exe.config
+C:\Users\Administrator\Desktop\华理通\wechatpost\wechatpost\obj\Debug\wechatpost.exe
+C:\Users\Administrator\Desktop\华理通\wechatpost\wechatpost\obj\Debug\wechatpost.pdb
+C:\Users\Administrator\Desktop\华理通\wechatpost\wechatpost\bin\Debug\wechatpost.exe
+C:\Users\Administrator\Desktop\华理通\wechatpost\wechatpost\bin\Debug\wechatpost.pdb
+C:\Users\Administrator\Desktop\华理通\wechatpost\wechatpost\obj\Debug\wechatpost.csprojResolveAssemblyReference.cache
