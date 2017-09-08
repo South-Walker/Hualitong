@@ -57,5 +57,10 @@ namespace WeChatMVC.Models
         {
             return html;
         }
+        public static void ClearCookies()
+        {
+            cookiecollection = new CookieCollection();
+            cookiecontainer = new CookieContainer();
+        }
     }
 }

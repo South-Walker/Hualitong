@@ -77,8 +77,8 @@ namespace WeChatMVC.Models
                     result.pwd = HttpUtility.UrlEncode(hasexistdate.jw_pwd);
                     result.studentnum = hasexistdate.student_num;
                 }
+                result.Check();
             }
-            result.Check();
             return result;
         }
         public static string SelectFromJwc(string wechat_id, JWCHttpHelper.CrawlerDetail detail)

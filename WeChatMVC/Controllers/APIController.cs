@@ -15,10 +15,13 @@ namespace WeChatMVC.Controllers
             JWCHttpHelper.Login(studentnum, pwd);
             if (JWCHttpHelper.IsLogin)
             {
-                return (string)detail();
+                string answer = (string)detail();
+                JWCHttpHelper.ClearCookies();
+                return answer;
             }
             else
             {
+                JWCHttpHelper.ClearCookies();
                 return JWCHttpHelper.ErrorMsg;
             }
         }

@@ -14,6 +14,7 @@ namespace WeChatMVC.Models
         public static Regex regexsuccess = new Regex("您好！");
         public static Regex regexpwdfail = new Regex("密码错误");
         public static Regex regexvcfail = new Regex("验证码不正确！");
+        public static Regex regexstudentnumfail = new Regex("学生初始密码为身份证号后六位");
         public static bool IsLogin = false;
         public static string ErrorMsg = "";
         public delegate object CrawlerDetail(bool isjson = false);
@@ -168,16 +169,6 @@ namespace WeChatMVC.Models
         }
         public static void Login(string studentnum, string pwd)
         {
-            if (studentnum.Length != 8)
-            {
-                ErrorMsg = "学号位数不对";
-                return;
-            }
-            if (Regex.IsMatch(pwd, "^[0-9]*$"))
-            {
-                ErrorMsg = "您的密码过于简单，请登录教务处信息网更改后再绑定";
-                return;
-            }
             JWCHttpHelper a = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
             a.HttpGet();
             JWCHttpHelper b = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/Base/VerifyCode.aspx");
@@ -190,11 +181,16 @@ namespace WeChatMVC.Models
             if (JWCHttpHelper.regexsuccess.IsMatch(html))
             {
                 IsLogin = true;
-                return ;
+                return;
             }
             else if (JWCHttpHelper.regexpwdfail.IsMatch(html))
             {
                 ErrorMsg = "您现在设置的教务处密码：" + pwd + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
+                return;
+            }
+            else if (JWCHttpHelper.regexstudentnumfail.IsMatch(html))
+            {
+                ErrorMsg = "学生初始密码为身份证号后六位。密码长度不超过10个字符。";
                 return;
             }
             else if (JWCHttpHelper.regexvcfail.IsMatch(html))
