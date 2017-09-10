@@ -135,8 +135,7 @@ namespace WeChatMVC.Models
             //启用时日期改为当前时间
             if (!isjson)
             {
-                return "今天并没有安排课程，享受你的暑假吧！";
-                return classtable.GetStringToday(new DateTime(2017, 9, 18));
+                return classtable.GetStringToday(new DateTime(2017, 9, 11));
             }
             else
             {
@@ -747,11 +746,13 @@ namespace WeChatMVC.Models
             List<Classob> todayclasses = GetClassToday(today);
             for (int i = 0; i < todayclasses.Count; i++)
             {
-                //最终呈现给用户的字符处理好看一点
-                result += todayclasses[i].classname;
+                result += todayclasses[i].classname + "\r\n";
+                result += todayclasses[i].room + "\r\n";
+                result += todayclasses[i].timebegin + "-" + todayclasses[i].timeend + "节\r\n\r\n";
             }
             if (result == "")
                 return "今天并没有安排课程！";
+            result += today.Year + "年" + today.Month + "月" + today.Day + "日";
             return result;
         }
     }
@@ -825,6 +826,8 @@ namespace WeChatMVC.Models
         }
         public bool isToday(int weeknum)
         {
+            if (weeknum < datebegin || weeknum > dateend)
+                return false;
             if (weeknum % 2 == 1 && isdan)
             {
                 return true;
