@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using WeChatMVC.Models;
 using System.Web.Mvc;
+using System.Web;
 
 namespace WeChatMVC.Models
 {
@@ -123,7 +124,6 @@ namespace WeChatMVC.Models
         }
         public static object jwc_classtable(bool isjson = false)
         {
-            // 功能待启用
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/E_SelectCourse/ScInFormation/syllabus.aspx");
             d.HttpPost("__VIEWSTATE=%2FwEPDwUKLTg3NzgzODIwNw9kFgICAQ9kFgICAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQhZZWFyVGVybR4ORGF0YVZhbHVlRmllbGQFAnNtHgtfIURhdGFCb3VuZGdkEBUCBTIwMTcxBTIwMTYyFQIJ5LiL5a2m5pyfCeacrOWtpuacnxQrAwJnZ2RkZNO%2Fri3X13dLfsVR9NFAAfI1ATzP&selyeartermflag=%E4%B8%8B%E5%AD%A6%E6%9C%9F&bttn_search=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWBAKX%2B67KDQKukO%2FqDwLJpuDqDwK1man8CYWGxTfqcteijecSaCWqU1U3a0ll");
             string html = d.ToString();
@@ -132,10 +132,9 @@ namespace WeChatMVC.Models
             Regex zhiti = new Regex("</font>");
             html = zhiti.Replace(html, "");
             ClassTableob classtable = new ClassTableob(html, new DateTime(2017, 9, 11));
-            //启用时日期改为当前时间
             if (!isjson)
             {
-                return classtable.GetStringToday(new DateTime(2017, 9, 11));
+                return classtable.GetStringToday(DateTime.Now) + "\r\n" + classtable.GetStringToday(DateTime.Now.AddDays(1), true) + "记得带上课本哦";
             }
             else
             {
@@ -184,7 +183,7 @@ namespace WeChatMVC.Models
             }
             else if (JWCHttpHelper.regexpwdfail.IsMatch(html))
             {
-                ErrorMsg = "您现在设置的教务处密码：" + pwd + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
+                ErrorMsg = "您现在设置的教务处密码：" + HttpUtility.UrlDecode(pwd) + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
                 return;
             }
             else if (JWCHttpHelper.regexstudentnumfail.IsMatch(html))
@@ -196,7 +195,7 @@ namespace WeChatMVC.Models
             {
                 Login(studentnum, pwd);
             }
-            ErrorMsg = "unknownfail";
+            ErrorMsg = "学号或密码错误";
             return;
         }
     }
@@ -740,19 +739,26 @@ namespace WeChatMVC.Models
             }
             return result;
         }
-        public string GetStringToday(DateTime today)
+        public string GetStringToday(DateTime today,bool istomorrow = false)
         {
             string result = "";
+            if (istomorrow)
+            {
+                result += today.Year + "年" + today.Month + "月" + today.Day + "日(明天)\r\n";
+            }
+            else
+            {
+                result += today.Year + "年" + today.Month + "月" + today.Day + "日(今天)\r\n";
+            }
             List<Classob> todayclasses = GetClassToday(today);
             for (int i = 0; i < todayclasses.Count; i++)
             {
                 result += todayclasses[i].classname + "\r\n";
                 result += todayclasses[i].room + "\r\n";
-                result += todayclasses[i].timebegin + "-" + todayclasses[i].timeend + "节\r\n\r\n";
+                result += todayclasses[i].timebegin + "-" + todayclasses[i].timeend + "节\r\n";
             }
-            if (result == "")
-                return "今天并没有安排课程！";
-            result += today.Year + "年" + today.Month + "月" + today.Day + "日";
+            if (todayclasses.Count == 0)
+                result += "今天并没有安排课程！\r\n";
             return result;
         }
     }

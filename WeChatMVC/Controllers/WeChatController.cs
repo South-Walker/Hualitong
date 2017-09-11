@@ -26,7 +26,7 @@ namespace WeChatMVC.Controllers
         {
             //测试语句
             //return APIController.CrawlerFromJwc("10150111", "***ak96101", JWCHttpHelper.jwc_largetable);
-           //     return DBManual.SelectFromJwc("oRunv0fTKxpbL0e8hYUEplWFYx64", JWCHttpHelper.classtable);
+            //    return DBManual.SelectFromJwc("oRunv0fTKxpbL0e8hYUEplWFYx64", JWCHttpHelper.classtable);
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"];
@@ -83,7 +83,7 @@ namespace WeChatMVC.Controllers
                         else if (message.Length > DBManual.xhmes.Length && message.Substring(0, DBManual.xhmes.Length) == DBManual.xhmes)
                         {
                             DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.xhmes.Length), userrequest.FromUserName, DBManual.xhmes);
-                            return userrequest.Get_Reply("学号已修改，现在您绑定的学号为：" + message.Substring(DBManual.xhmes.Length));
+                            return userrequest.Get_Reply("学号已修改，现在您绑定的学号为：" + message.Substring(DBManual.xhmes.Length) + "请输入jwc + 您的教务处密码来绑定，如jwc123456");
                         }
                         else if (message.Length > DBManual.jwcmes.Length && message.Substring(0, DBManual.jwcmes.Length) == DBManual.jwcmes)
                         {
