@@ -10,7 +10,7 @@ using System.Web;
 
 namespace WeChatMVC.Models
 {
-    public class JWCHttpHelper:MyHttpHelper
+    public class JWCHttpHelper : MyHttpHelper
     {
         public static Regex regexsuccess = new Regex("您好！");
         public static Regex regexpwdfail = new Regex("密码错误");
@@ -131,6 +131,8 @@ namespace WeChatMVC.Models
             html = songti.Replace(html, "");
             Regex zhiti = new Regex("</font>");
             html = zhiti.Replace(html, "");
+            Regex zhihao = new Regex("<font size=1>");
+            html = zhihao.Replace(html, "");
             ClassTableob classtable = new ClassTableob(html, new DateTime(2017, 9, 11));
             if (!isjson)
             {
@@ -153,7 +155,7 @@ namespace WeChatMVC.Models
             //缺个正则
             return html;
         }
-        public JWCHttpHelper(string url):
+        public JWCHttpHelper(string url) :
             base(url)
         {
 
@@ -197,6 +199,12 @@ namespace WeChatMVC.Models
             }
             ErrorMsg = "学号或密码错误";
             return;
+        }
+        public new static void ClearCookies()
+        {
+            cookiecollection = new CookieCollection();
+            cookiecontainer = new CookieContainer();
+            IsLogin = false;
         }
     }
     class Letter
@@ -662,17 +670,43 @@ namespace WeChatMVC.Models
                     ClassTable.Add(list);
                 }
             }
-            Regex regex = new Regex("<td[^>]*>(?<class>[^<]*)</td><td[^>]*>\\d+</td><td[^>]*>(?<teacher>[^<]*)</td><td[^>]*><font size=1>(?<date>[^<]*)</td><td [^>]*><font size=1>(?<room>[^<]*)</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td>");
-            MatchCollection mc = regex.Matches(html);
-            foreach (Match m in mc)
+            Regex regex = new Regex("<table[^>]*>.*</Table>");
+            Match m = regex.Match(html);
+            regex = new Regex("<tr[^>]*>.*?</tr[^>]*>");
+            MatchCollection mc = regex.Matches(m.Value);
+            string teacher = "";
+            string classname = "";
+            string date = "";
+            string room = "";
+            for (int trnum = 1; trnum < mc.Count; trnum++)
             {
-                GroupCollection gc = m.Groups;
-                string teacher = gc["teacher"].Value;
-                string classname = gc["class"].Value;
-                string date = gc["date"].Value;
-                string room = gc["room"].Value;
-                Classob now = new Classob(teacher, classname, date, room);
-                ClassTable[now.weekcode].Add(now);
+                m = mc[trnum];
+                string now = m.Value;
+                if (Regex.IsMatch(now, "tr height=24"))
+                {
+                    regex = new Regex("<td[^>]*rowspan=(?<howmanytimes>\\d+)[^>]*>(?<class>[^<]*)</td><td[^>]*>\\d+</td><td[^>]*>(?<teacher>[^<]*)</td><td[^>]*>(?<date>[^<]*)</td><td [^>]*>(?<room>[^<]*)</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td></tr>");
+                    m = regex.Match(now);
+                    GroupCollection gc = m.Groups;
+                    teacher = gc["teach"].Value;
+                    classname = gc["class"].Value;
+                    date = gc["date"].Value;
+                    room = gc["room"].Value;
+                    Classob nowclass = new Classob(teacher, classname, date, room);
+                    ClassTable[nowclass.weekcode].Add(nowclass);
+                }
+                else
+                {
+                    regex = new Regex("<td[^>]*>(?<date>[^<]*)(<td[^>]*>(?<room>[^<]*))?");
+                    m = regex.Match(now);
+                    GroupCollection gc = m.Groups;
+                    date = gc["date"].Value;
+                    if (!string.IsNullOrEmpty(gc["room"].Value))
+                    {
+                        room = gc["room"].Value;
+                    }
+                    Classob nowclass = new Classob(teacher, classname, date, room);
+                    ClassTable[nowclass.weekcode].Add(nowclass);
+                }
             }
             sort();
         }

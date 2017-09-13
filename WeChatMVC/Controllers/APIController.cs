@@ -17,8 +17,6 @@ namespace WeChatMVC.Controllers
             {
                 string answer = (string)detail();
                 JWCHttpHelper.ClearCookies();
-                //这里重载
-                JWCHttpHelper.IsLogin = false;
                 return answer;
             }
             else

@@ -8,8 +8,8 @@ namespace WeChatMVC.Models
 {
     public class MyHttpHelper
     {
-        static CookieContainer cookiecontainer = new CookieContainer();
-        static CookieCollection cookiecollection = new CookieCollection();
+        protected static CookieContainer cookiecontainer = new CookieContainer();
+        protected static CookieCollection cookiecollection = new CookieCollection();
         protected HttpWebRequest request;
         protected HttpWebResponse response;
         string html = string.Empty;
