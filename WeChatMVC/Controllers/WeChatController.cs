@@ -31,11 +31,12 @@ namespace WeChatMVC.Controllers
             {
                 return Request["echostr"];
             }
-            if (IsFromTencent("961016") && Request.HttpMethod == "POST") //确认是腾讯发来,debug前会在前面加上感叹号
+            if (IsFromTencent("961016") && Request.HttpMethod == "POST")
             {
                 try
                 {
                     #region wechatpost
+                    #region hualitong
                     userrequest = new UserRequest(Request.InputStream);
                     if (userrequest.IsClick())
                     {
@@ -91,6 +92,7 @@ namespace WeChatMVC.Controllers
                             return userrequest.Get_Reply("教务处密码已修改，现在您绑定的教务处密码为：" + message.Substring(DBManual.jwcmes.Length) + "，为防止密码泄露，请及时删除此条消息");
                         }
                     }
+                    #endregion
                     #region print
                     if (userrequest.FromUserName == "o3dl2wZ3YisQO8GW_bd_c-QOWGsQ" || userrequest.FromUserName == "o3dl2wXugXYxUebDprdV5_KyADP8" || userrequest.FromUserName == "o3dl2wUzmzcr7ZvZ6v7vi_I4Hffw" || userrequest.FromUserName == "o3dl2wZHdvmo1sxQaiKefLRcyr_o")
                     {
@@ -99,7 +101,7 @@ namespace WeChatMVC.Controllers
                     }
                     #endregion
                     return "success";
-                    #endregion}
+                    #endregion
                 }
                 catch
                 {
