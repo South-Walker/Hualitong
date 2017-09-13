@@ -716,34 +716,8 @@ namespace WeChatMVC.Models
             {
                 if (list.Count <= 1)
                     continue;
-                sortlist(list, 0, list.Count - 1);
+                list.Sort((x, y) => x.timebegin.CompareTo(y.timebegin));
             }
-        }
-        private void sortlist(List<Classob> list, int begin, int end)
-        {
-            Classob temp;
-            if (end <= begin)
-                return;
-            int a = begin; int b = end;
-            while (b != a)
-            {
-                while (Classob.isAearlier(list[a], list[b]) && b != a)
-                {
-                    a++;
-                }
-                temp = list[a];
-                list[a] = list[b];
-                list[b] = temp;
-                while (Classob.isAearlier(list[a], list[b]) && b != a)
-                {
-                    b--;
-                }
-                temp = list[a];
-                list[a] = list[b];
-                list[b] = temp;
-            }
-            sortlist(list, begin, a - 1);
-            sortlist(list, b + 1, end);
         }
         private int getweeknum(DateTime today)
         {
@@ -859,10 +833,6 @@ namespace WeChatMVC.Models
                     weekcode = 0;
                     break;
             }
-        }
-        public static bool isAearlier(Classob a, Classob b)
-        {
-            return (a.timebegin <= b.timebegin) ? true : false;
         }
         public bool isToday(int weeknum)
         {
