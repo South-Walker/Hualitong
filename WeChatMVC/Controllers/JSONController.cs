@@ -68,19 +68,19 @@ namespace WeChatMVC.Controllers
         {
             StudentInfo info = DBManual.SelectUser(openid);
             JWCHttpHelper.Login(info.studentnum, info.pwd);
-            return (JsonResult)JWCHttpHelper.smalltable(true);
+            return JWCHttpHelper.jwc_smalltable<JsonResult>();
         }
         public JsonResult largetable(string openid)
         {
             StudentInfo info = DBManual.SelectUser(openid);
             JWCHttpHelper.Login(info.studentnum, info.pwd);
-            return (JsonResult)JWCHttpHelper.largetable(true);
+            return JWCHttpHelper.jwc_largetable<JsonResult>();
         }
         public JsonResult classtable(string openid)
         {
             StudentInfo info = DBManual.SelectUser(openid);
             JWCHttpHelper.Login(info.studentnum, info.pwd);
-            return (JsonResult)JWCHttpHelper.classtable(true);
+            return JWCHttpHelper.jwc_classtable<JsonResult>();
         }
     }
 }

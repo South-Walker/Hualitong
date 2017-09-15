@@ -18,17 +18,17 @@ namespace WeChatMVC.Models
         public static Regex regexstudentnumfail = new Regex("学生初始密码为身份证号后六位");
         public static bool IsLogin = false;
         public static string ErrorMsg = "";
-        public delegate object CrawlerDetail(bool isjson = false);
-        public static CrawlerDetail largetable = new CrawlerDetail(jwc_largetable);
-        public static CrawlerDetail smalltable = new CrawlerDetail(jwc_smarttable);
-        public static CrawlerDetail gradepoint = new CrawlerDetail(jwc_gradepoint);
-        public static CrawlerDetail classtable = new CrawlerDetail(jwc_classtable);
-        public static CrawlerDetail examtable = new CrawlerDetail(jwc_examtable);
+        public delegate T CrawlerDetail<T>();
+        public static CrawlerDetail<string> largetable = new CrawlerDetail<string>(jwc_largetable<string>);
+        public static CrawlerDetail<string> smalltable = new CrawlerDetail<string>(jwc_smalltable<string>);
+        public static CrawlerDetail<string> gradepoint = new CrawlerDetail<string>(jwc_gradepoint<string>);
+        public static CrawlerDetail<string> classtable = new CrawlerDetail<string>(jwc_classtable<string>);
+        public static CrawlerDetail<string> examtable = new CrawlerDetail<string>(jwc_examtable<string>);
         private const string log_success = "success";
         private const string log_fail_pwd = "pwd";
         private const string log_fail_vc = "vc";
         private const string log_fail_xh = "xh";
-        public static object jwc_largetable(bool isjson = false)
+        public static T jwc_largetable<T>()
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
             d.HttpGet();
@@ -39,10 +39,10 @@ namespace WeChatMVC.Models
                 "<font face=\"[^\"]*\">(?<fengshu>\\d+)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" " +
                 "valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td>"
                 );
-            string result = "";
             MatchCollection mc = regex.Matches(html);
-            if (!isjson)
+            if (typeof(T).Name.Equals("String")) 
             {
+                string result = "";
                 foreach (Match item in mc)
                 {
                     GroupCollection gc = item.Groups;
@@ -50,9 +50,9 @@ namespace WeChatMVC.Models
                 }
                 Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
                 result = result + "平均绩点：" + jidian.Match(html).Groups["jidian"].Value;
-                return result;
+                return (T)(object)result;
             }
-            else
+            else if (typeof(T).Name.Equals("JsonResult"))
             {
                 Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
                 JsonResult json = new JsonResult();
@@ -67,10 +67,11 @@ namespace WeChatMVC.Models
                 }
                 json.Data = data;
                 json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-                return json;
+                return (T)(object)json;
             }
+            return default(T);
         }
-        public static object jwc_smarttable(bool isjson = false)
+        public static T jwc_smalltable<T>()
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_ScoreTableYearTerm.aspx?i=0%3a26%3a46");
             d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM1MDcwMDg1MQ9kFgICAQ9kFgICAQ9kFgZmD2QWAmYPZBYCAgMPDxYCHgdFbmFibGVkaGRkAgEPZBYCZg9kFgICAQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQhUZXJtTmFtZR4ORGF0YVZhbHVlRmllbGQFCFllYXJUZXJtHgtfIURhdGFCb3VuZGdkEBUFFeKAlOKAlOivt%2BmAieaLqeKAlOKAlBYyMDE2LTIwMTflrablubQy5a2m5pyfFjIwMTYtMjAxN%2BWtpuW5tDHlrabmnJ8WMjAxNS0yMDE25a2m5bm0MuWtpuacnxYyMDE1LTIwMTblrablubQx5a2m5pyfFQUBMAUyMDE2MgUyMDE2MQUyMDE1MgUyMDE1MRQrAwVnZ2dnZ2RkAgMPZBYCZg9kFgJmDzwrAAsAZGSDV9YWPjkZzs%2BQA3Jxh1jr8S5yVA%3D%3D&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWCQLCq5zYDAKC5sFXApf3trkEAtjpwosFAo%2F6pfQIAoD6pfQIAo%2F6iQkCgPqJCQLax9vVBk%2F0%2B3xjQYQIiqbgEfy%2FW8XcekCs");
@@ -80,19 +81,19 @@ namespace WeChatMVC.Models
             Regex zhiti = new Regex("</font>");
             html = zhiti.Replace(html, "");
             Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d+(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d+(\.\d+)?)[^<]*</td><td>(<font[^>]*>)?(?<fengshu>\d+(\.\d+)?)[^<]*(</font[^>]*>)?</td><td>\d+(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
-            string result = "";
             MatchCollection mc = regex.Matches(html);
-            if (!isjson)
+            if (typeof(T).Name.Equals("String"))
             {
+                string result = "";
                 foreach (Match item in mc)
                 {
                     GroupCollection gc = item.Groups;
                     result = result + gc["kemu"].Value + ":" + gc["fengshu"].Value + "\n";
                 }
                 result = result + "以上为本学期成绩";
-                return result;
+                return (T)(object)result;
             }
-            else
+            else if (typeof(T).Name.Equals("JsonResult"))
             {
                 JsonResult json = new JsonResult();
                 var data = new object[mc.Count];
@@ -105,24 +106,24 @@ namespace WeChatMVC.Models
                 }
                 json.Data = data;
                 json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-                return json;
+                return (T)(object)json;
             }
+            return default(T);
         }
-        public static object jwc_gradepoint(bool isjson = false)
+        public static T jwc_gradepoint<T>()
         {
             JWCHttpHelper e = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
             e.HttpGet();
             string html = e.ToString();
             Regex jidian = new Regex("平均学分绩点:(?<jidian>\\d+(\\.\\d+)?)");
-            if (!isjson)
-                return jidian.Match(html).Groups["jidian"].Value;
-            else
+            if (typeof(T).Name.Equals("String"))
             {
-                JsonResult json = new JsonResult();
-                return json.ToString();
+                string result = jidian.Match(html).Groups["jidian"].Value;
+                return (T)(object)result;
             }
+            return default(T);
         }
-        public static object jwc_classtable(bool isjson = false)
+        public static T jwc_classtable<T>()
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/E_SelectCourse/ScInFormation/syllabus.aspx");
             d.HttpPost("__VIEWSTATE=%2FwEPDwUKLTg3NzgzODIwNw9kFgICAQ9kFgICAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQhZZWFyVGVybR4ORGF0YVZhbHVlRmllbGQFAnNtHgtfIURhdGFCb3VuZGdkEBUCBTIwMTcxBTIwMTYyFQIJ5LiL5a2m5pyfCeacrOWtpuacnxQrAwJnZ2RkZNO%2Fri3X13dLfsVR9NFAAfI1ATzP&selyeartermflag=%E4%B8%8B%E5%AD%A6%E6%9C%9F&bttn_search=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWBAKX%2B67KDQKukO%2FqDwLJpuDqDwK1man8CYWGxTfqcteijecSaCWqU1U3a0ll");
@@ -134,16 +135,18 @@ namespace WeChatMVC.Models
             Regex zhihao = new Regex("<font size=1>");
             html = zhihao.Replace(html, "");
             ClassTableob classtable = new ClassTableob(html, new DateTime(2017, 9, 11));
-            if (!isjson)
+            if (typeof(T).Name.Equals("String"))
             {
-                return classtable.GetStringToday(DateTime.Now) + "\r\n" + classtable.GetStringToday(DateTime.Now.AddDays(1), true) + "记得带上课本哦";
+                string result = classtable.GetStringToday(DateTime.Now) + "\r\n" + classtable.GetStringToday(DateTime.Now.AddDays(1), true) + "记得带上课本哦";
+                return (T)(object)result;
             }
-            else
+            else if (typeof(T).Name.Equals("JsonResult"))
             {
-                return classtable.GetJson();
+                return (T)(object)classtable.GetJson();
             }
+            return default(T);
         }
-        public static object jwc_examtable(bool isjson = false)
+        public static T jwc_examtable<T>()
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_TestTableDetail.aspx?key=0");
             d.HttpPost("__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwULLTE2NTU5MjUyNDUPZBYCAgEPZBYCAgEPZBYIAgEPZBYCZg9kFgQCAQ8QZBAVDQnor7fpgInmi6kFMjAxNzEFMjAxNjIFMjAxNjEFMjAxNTIFMjAxNTEFMjAxNDIFMjAxNDEFMjAxMzIFMjAxMzEFMjAxMjIFMjAxMjEFMjAxMTIVDQnor7fpgInmi6kFMjAxNzEFMjAxNjIFMjAxNjEFMjAxNTIFMjAxNTEFMjAxNDIFMjAxNDEFMjAxMzIFMjAxMzEFMjAxMjIFMjAxMjEFMjAxMTIUKwMNZ2dnZ2dnZ2dnZ2dnZ2RkAggPEGRkFgFmZAICD2QWAmYPZBYCZg8PFgIeBFRleHQFMTIwMTctMjAxOOWtpuW5tOesrDHlrabmnJ%2FnmoTogIPor5XooajkuI3lrZjlnKjvvIFkZAIDD2QWAmYPZBYGZg8PFgIfAGVkZAICDw8WAh8AZWRkAgQPDxYCHwBlZGQCBA9kFgJmD2QWAmYPPCsACwEADxYCHgdWaXNpYmxlaGRkZC74a7y14FQ9u95U4X%2BZFk%2BC6jss&ddlYearTerm=20162&btnSelect=%E6%9F%A5%E8%AF%A2&RdbCourse=%E4%B8%AA%E4%BA%BA%E8%80%83%E8%AF%95%E8%A1%A8&__EVENTVALIDATION=%2FwEWEgLmo53ZCgLekp65DQKA%2BtHTAQKP%2BqX0CAKA%2BqX0CAKP%2BokJAoD6iQkCj%2FqdogsCgPqdogsCj%2FrhxgICgPrhxgICj%2Fr1mwoCgPr1mwoCj%2FrZvAUC2sfb1QYCuaHTqAgCj%2FnpnQ4CwZTn4whWHkuO6LHUmnWxc9LhgAqJGND3xA%3D%3D");
@@ -153,7 +156,7 @@ namespace WeChatMVC.Models
             Regex zhiti = new Regex("</font>");
             html = zhiti.Replace(html, "");
             //缺个正则
-            return html;
+            return (T)(object)html;
         }
         public JWCHttpHelper(string url) :
             base(url)

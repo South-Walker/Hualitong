@@ -81,7 +81,7 @@ namespace WeChatMVC.Models
             }
             return result;
         }
-        public static string SelectFromJwc(string wechat_id, JWCHttpHelper.CrawlerDetail detail)
+        public static string SelectFromJwc(string wechat_id, JWCHttpHelper.CrawlerDetail<string> detail)
         {
             StudentInfo userinfo = SelectUser(wechat_id);
             if (userinfo.IsSuccess)

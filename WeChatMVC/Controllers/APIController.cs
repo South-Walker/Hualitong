@@ -10,12 +10,12 @@ namespace WeChatMVC.Controllers
     public class APIController : BaseController
     {
         // GET: API
-        public static string CrawlerFromJwc(string studentnum, string pwd, JWCHttpHelper.CrawlerDetail detail)
+        public static string CrawlerFromJwc(string studentnum, string pwd, JWCHttpHelper.CrawlerDetail<string> detail)
         {
             JWCHttpHelper.Login(studentnum, pwd);
             if (JWCHttpHelper.IsLogin)
             {
-                string answer = (string)detail();
+                string answer = detail();
                 JWCHttpHelper.ClearCookies();
                 return answer;
             }
@@ -25,7 +25,7 @@ namespace WeChatMVC.Controllers
                 return JWCHttpHelper.ErrorMsg;
             }
         }
-        public static string CrawlerFromJwc(StudentInfo userinfo, JWCHttpHelper.CrawlerDetail detail)
+        public static string CrawlerFromJwc(StudentInfo userinfo, JWCHttpHelper.CrawlerDetail<string> detail)
         {
             return CrawlerFromJwc(userinfo.studentnum, userinfo.pwd, detail);
         }
