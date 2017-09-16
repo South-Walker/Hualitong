@@ -81,6 +81,25 @@ namespace WeChatMVC.Models
             }
             return result;
         }
+        public static List<StudentInfo> SelectAll()
+        {
+            List<StudentInfo> result = new List<StudentInfo>();
+            using (HualitongDBDataContext db = new HualitongDBDataContext())
+            {
+                var all = from a in db.view_wechatpwds
+                          where a.student_num != null && a.jw_pwd != null
+                          select a;
+                foreach (var item in all)
+                {
+                    StudentInfo now = new StudentInfo();
+                    now.wechatid = item.wechat_id;
+                    now.pwd = HttpUtility.UrlEncode(item.jw_pwd);
+                    now.studentnum = item.student_num;
+                    result.Add(now);
+                }
+            }
+            return result;
+        }
         public static string SelectFromJwc(string wechat_id, JWCHttpHelper.CrawlerDetail<string> detail)
         {
             StudentInfo userinfo = SelectUser(wechat_id);

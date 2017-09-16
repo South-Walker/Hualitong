@@ -25,8 +25,10 @@ namespace WeChatMVC.Controllers
         public string Index() //回复全都是xml格式的string
         {
             //测试语句
-         //   return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
-           //     return DBManual.SelectFromJwc("oRunv0fTKxpbL0e8hYUEplWFYx64", JWCHttpHelper.classtable);
+          //  return BufferController.Select("ob-f1w_bvXQYzEKAfYPPuOB_Q3zo");
+            //   return ServerController.UpdateJWC(JWCHttpHelper.largetable);
+            // return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
+            //     return DBManual.SelectFromJwc("oRunv0fTKxpbL0e8hYUEplWFYx64", JWCHttpHelper.classtable);
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"];
@@ -71,7 +73,8 @@ namespace WeChatMVC.Controllers
 
                         if (message == "成绩大表")
                         {
-                            return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.largetable));
+                            return userrequest.Get_Reply(BufferController.Select(userrequest.FromUserName));
+                           // return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.largetable));
                         }
                         else if (message == "绩点")
                         {

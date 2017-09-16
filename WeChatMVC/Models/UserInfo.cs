@@ -11,6 +11,7 @@ namespace WeChatMVC.Models
         public string studentnum { get; set; }
         public string pwd { get; set; }
         public bool hasexistdate = true;
+        public string wechatid = "";
         public string errormessage = "";
         public bool IsSuccess = true;
         public StudentInfo(string thisstudentnum,string thispwd)

@@ -13,7 +13,7 @@ namespace WeChatMVC.Models
     public class JWCHttpHelper : MyHttpHelper
     {
         public static Regex regexsuccess = new Regex("您好！");
-        public static Regex regexpwdfail = new Regex("密码错误");
+        public static Regex regexpwdfail = new Regex("密码");
         public static Regex regexvcfail = new Regex("验证码不正确！");
         public static Regex regexstudentnumfail = new Regex("学生初始密码为身份证号后六位");
         public static bool IsLogin = false;
@@ -172,6 +172,12 @@ namespace WeChatMVC.Models
         }
         public static void Login(string studentnum, string pwd)
         {
+
+            if (pwd.Length > 10) 
+            {
+                ErrorMsg = "您现在设置的教务处密码：" + HttpUtility.UrlDecode(pwd) + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
+                return;
+            }
             JWCHttpHelper a = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_StudentQueryLogin.aspx");
             a.HttpGet();
             JWCHttpHelper b = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/Base/VerifyCode.aspx");
