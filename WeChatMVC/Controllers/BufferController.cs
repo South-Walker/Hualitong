@@ -4,9 +4,17 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
+using WeChatMVC.Models;
 
 namespace WeChatMVC.Controllers
 {
+    public class BufferSubdirectory
+    {
+        public static string ClassTable = "classtablehtml";
+        public static string GradePoint = "gradepoint";
+        public static string LargeTable = "largetable";
+        public static string SmallTable = "smalltable";
+    }
     public class BufferController : Controller
     {
         static string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\";
@@ -15,14 +23,19 @@ namespace WeChatMVC.Controllers
         {
             return View();
         }
-        public static string Select(string openid)
+        public static string Select(string detail, string openid)
         {
             string result = "";
-            string path = root + openid;
+            string path = root + detail + "/" + openid;
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             StreamReader sr = new StreamReader(fs);
             result = sr.ReadToEnd();
-            return result;
+            if (detail != BufferSubdirectory.ClassTable)
+                return result;
+            else
+            {
+                return JWCHttpHelper.ClassTableFromHtml<string>(result); 
+            }
         }
     }
 }

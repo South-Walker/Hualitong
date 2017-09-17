@@ -25,10 +25,12 @@ namespace WeChatMVC.Controllers
         public string Index() //回复全都是xml格式的string
         {
             //测试语句
-          //  return BufferController.Select("ob-f1w_bvXQYzEKAfYPPuOB_Q3zo");
-            //   return ServerController.UpdateJWC(JWCHttpHelper.largetable);
+
+            //    return BufferController.Select("classtablehtml", "ob-f1w_bvXQYzEKAfYPPuOB_Q3zo");
             // return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
-            //     return DBManual.SelectFromJwc("oRunv0fTKxpbL0e8hYUEplWFYx64", JWCHttpHelper.classtable);
+            //return DBManual.SelectFromJwc("ob-f1w2CmwJ63tiumrHvRhSOMPxE", JWCHttpHelper.largetable);
+            //缓存语句
+            //return ServerController.UpdateJWC(JWCHttpHelper.gradepoint, BufferSubdirectory.GradePoint);
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"];
@@ -51,9 +53,11 @@ namespace WeChatMVC.Controllers
                             case "hualitong_changestudentnum":
                                 return userrequest.Get_Reply(UserRequest.hualitong_changestudentnum);
                             case "hualitong_grade":
-                                return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.smalltable));
+                                return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.SmallTable, userrequest.FromUserName));
+                            //    return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.smalltable));
                             case "hualitong_classtable":
-                                return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.classtable));
+                                return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.ClassTable, userrequest.FromUserName));
+                            //   return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.classtable));
                             case "hualitong_pj":
                                 return userrequest.Get_Reply("现在还没到评教时间哦～");
                             case "hualitong_more":
@@ -73,12 +77,13 @@ namespace WeChatMVC.Controllers
 
                         if (message == "成绩大表")
                         {
-                            return userrequest.Get_Reply(BufferController.Select(userrequest.FromUserName));
+                            return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.LargeTable, userrequest.FromUserName));
                            // return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.largetable));
                         }
                         else if (message == "绩点")
                         {
-                            return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.gradepoint));
+                            return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.GradePoint, userrequest.FromUserName));
+                            //       return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.gradepoint));
                         }
                         else if (message == "完整课表")
                         {

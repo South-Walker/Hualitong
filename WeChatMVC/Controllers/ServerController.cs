@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WeChatMVC.Models;
+using System.Text.RegularExpressions;
 using System.IO;
 
 namespace WeChatMVC.Controllers
@@ -15,16 +16,18 @@ namespace WeChatMVC.Controllers
         {
             return View();
         }
-        public static string UpdateJWC(JWCHttpHelper.CrawlerDetail<string> detail)
+        public static string UpdateJWC(JWCHttpHelper.CrawlerDetail<string> detail, string subdirectory)
         {
             string result = "";
-            string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\";
+            string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\" + subdirectory + @"\";
             string path;
             FileStream fs;StreamWriter sw;
             List<StudentInfo> alluser = DBManual.SelectAll();
             foreach (StudentInfo item in alluser)
             {
-                path = root + item.wechatid;
+                Regex regex = new Regex(@"^\d+$");
+                if (regex.IsMatch(item.pwd)) continue;
+                    path = root + item.wechatid;
                 if (System.IO.File.Exists(path))
                 {
                     result += item.studentnum + ":hasexist<br>";
@@ -42,6 +45,7 @@ namespace WeChatMVC.Controllers
                     sw.Close();
                     fs.Close();
                     result += item.studentnum + ":success<br>";
+                    JWCHttpHelper.ClearCookies();
                 }
                 else
                 {

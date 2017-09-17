@@ -19,6 +19,7 @@ namespace WeChatMVC.Models
         public static bool IsLogin = false;
         public static string ErrorMsg = "";
         public delegate T CrawlerDetail<T>();
+        public static CrawlerDetail<string> classtablehtml = new CrawlerDetail<string>(jwc_classtablehtml<string>);
         public static CrawlerDetail<string> largetable = new CrawlerDetail<string>(jwc_largetable<string>);
         public static CrawlerDetail<string> smalltable = new CrawlerDetail<string>(jwc_smalltable<string>);
         public static CrawlerDetail<string> gradepoint = new CrawlerDetail<string>(jwc_gradepoint<string>);
@@ -33,11 +34,15 @@ namespace WeChatMVC.Models
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_BigScoreTableDetail.aspx?key=0");
             d.HttpGet();
             string html = d.ToString();
-            Regex regex = new Regex("<td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\"" +
-                " valign=\"middle\"><font face=\"[^\"]*\">(?<kemu>[^<]*)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font>" +
-                "</td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" valign=\"middle\">" +
-                "<font face=\"[^\"]*\">(?<fengshu>\\d+)</font></td><td align=\"center\" valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td><td align=\"center\" " +
-                "valign=\"middle\"><font face=\"[^\"]*\">[^<]*</font></td>"
+            Regex songti = new Regex("<font[^>]*>");
+            html = songti.Replace(html, "");
+            Regex zhiti = new Regex("</font>");
+            html = zhiti.Replace(html, "");
+            Regex regex = new Regex("<td align=\"center\" valign=\"middle\">[^<]*</td><td align=\"center\"" +
+                " valign=\"middle\">(?<kemu>[^<]*)</td><td align=\"center\" valign=\"middle\">[^<]*" +
+                "</td><td align=\"center\" valign=\"middle\">[^<]*</td><td align=\"center\" valign=\"middle\">" +
+                "(?<fengshu>\\d+)</td><td align=\"center\" valign=\"middle\">[^<]*</td><td align=\"center\" " +
+                "valign=\"middle\">[^<]*</td>"
                 );
             MatchCollection mc = regex.Matches(html);
             if (typeof(T).Name.Equals("String")) 
@@ -71,6 +76,23 @@ namespace WeChatMVC.Models
             }
             return default(T);
         }
+        public static T jwc_classtablehtml<T>()
+        {
+            if (typeof(T).Name.Equals("String"))
+            {
+                JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/E_SelectCourse/ScInFormation/syllabus.aspx");
+                d.HttpPost("__VIEWSTATE=%2FwEPDwUKLTg3NzgzODIwNw9kFgICAQ9kFgICAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQhZZWFyVGVybR4ORGF0YVZhbHVlRmllbGQFAnNtHgtfIURhdGFCb3VuZGdkEBUCBTIwMTcxBTIwMTYyFQIJ5LiL5a2m5pyfCeacrOWtpuacnxQrAwJnZ2RkZNO%2Fri3X13dLfsVR9NFAAfI1ATzP&selyeartermflag=%E4%B8%8B%E5%AD%A6%E6%9C%9F&bttn_search=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWBAKX%2B67KDQKukO%2FqDwLJpuDqDwK1man8CYWGxTfqcteijecSaCWqU1U3a0ll");
+                string html = d.ToString();
+                Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
+                html = songti.Replace(html, "");
+                Regex zhiti = new Regex("</font>");
+                html = zhiti.Replace(html, "");
+                Regex zhihao = new Regex("<font size=1>");
+                html = zhihao.Replace(html, "");
+                return (T)(object)html;
+            }
+            return default(T);
+        }
         public static T jwc_smalltable<T>()
         {
             JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/K_StudentQuery/K_ScoreTableYearTerm.aspx?i=0%3a26%3a46");
@@ -80,7 +102,7 @@ namespace WeChatMVC.Models
             html = songti.Replace(html, "");
             Regex zhiti = new Regex("</font>");
             html = zhiti.Replace(html, "");
-            Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d+(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d+(\.\d+)?)[^<]*</td><td>(<font[^>]*>)?(?<fengshu>\d+(\.\d+)?)[^<]*(</font[^>]*>)?</td><td>\d+(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
+            Regex regex = new Regex(@"<td>(?<kemu>[^<]*)</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td><td>(?<juanmianfen>\d*(\.\d+)?)[^<]*</td><td>(?<pingshifen>\d*(\.\d+)?)[^<]*</td><td>(<font[^>]*>)?(?<fengshu>\d*(\.\d+)?)[^<]*(</font[^>]*>)?</td><td>\d*(\.\d+)?[^<]*</td><td>\d+(\.\d+)?[^<]*</td>");
             MatchCollection mc = regex.Matches(html);
             if (typeof(T).Name.Equals("String"))
             {
@@ -125,15 +147,11 @@ namespace WeChatMVC.Models
         }
         public static T jwc_classtable<T>()
         {
-            JWCHttpHelper d = new JWCHttpHelper("http://inquiry.ecust.edu.cn/ecustedu/E_SelectCourse/ScInFormation/syllabus.aspx");
-            d.HttpPost("__VIEWSTATE=%2FwEPDwUKLTg3NzgzODIwNw9kFgICAQ9kFgICAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQhZZWFyVGVybR4ORGF0YVZhbHVlRmllbGQFAnNtHgtfIURhdGFCb3VuZGdkEBUCBTIwMTcxBTIwMTYyFQIJ5LiL5a2m5pyfCeacrOWtpuacnxQrAwJnZ2RkZNO%2Fri3X13dLfsVR9NFAAfI1ATzP&selyeartermflag=%E4%B8%8B%E5%AD%A6%E6%9C%9F&bttn_search=%E6%9F%A5%E8%AF%A2&__EVENTVALIDATION=%2FwEWBAKX%2B67KDQKukO%2FqDwLJpuDqDwK1man8CYWGxTfqcteijecSaCWqU1U3a0ll");
-            string html = d.ToString();
-            Regex songti = new Regex("<font face=\"宋体\" color=\"Black\">");
-            html = songti.Replace(html, "");
-            Regex zhiti = new Regex("</font>");
-            html = zhiti.Replace(html, "");
-            Regex zhihao = new Regex("<font size=1>");
-            html = zhihao.Replace(html, "");
+            string html = jwc_classtablehtml<string>();
+            return ClassTableFromHtml<T>(html);
+        }
+        public static T ClassTableFromHtml<T>(string html)
+        {
             ClassTableob classtable = new ClassTableob(html, new DateTime(2017, 9, 11));
             if (typeof(T).Name.Equals("String"))
             {
@@ -145,6 +163,7 @@ namespace WeChatMVC.Models
                 return (T)(object)classtable.GetJson();
             }
             return default(T);
+
         }
         public static T jwc_examtable<T>()
         {
