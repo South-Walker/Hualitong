@@ -30,7 +30,8 @@ namespace WeChatMVC.Controllers
             // return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
             //return DBManual.SelectFromJwc("ob-f1w2CmwJ63tiumrHvRhSOMPxE", JWCHttpHelper.largetable);
             //缓存语句
-            //return ServerController.UpdateJWC(JWCHttpHelper.gradepoint, BufferSubdirectory.GradePoint);
+        //    BufferSubdirectory a = new BufferSubdirectory(); 
+          //  return ServerController.UpdateJWC();
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"];

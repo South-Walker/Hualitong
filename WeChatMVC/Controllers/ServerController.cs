@@ -16,35 +16,39 @@ namespace WeChatMVC.Controllers
         {
             return View();
         }
-        public static string UpdateJWC(JWCHttpHelper.CrawlerDetail<string> detail, string subdirectory)
+        public static string UpdateJWC()
         {
             string result = "";
-            string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\" + subdirectory + @"\";
             string path;
             FileStream fs;StreamWriter sw;
             List<StudentInfo> alluser = DBManual.SelectAll();
             foreach (StudentInfo item in alluser)
             {
                 Regex regex = new Regex(@"^\d+$");
-                if (regex.IsMatch(item.pwd)) continue;
-                    path = root + item.wechatid;
-                if (System.IO.File.Exists(path))
-                {
-                    result += item.studentnum + ":hasexist<br>";
+                if (regex.IsMatch(item.pwd))
                     continue;
-                }
                 JWCHttpHelper.Login(item.studentnum, item.pwd);
                 if (JWCHttpHelper.IsLogin)
                 {
-                    string now;
-                    now = detail();
-                    fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                    sw = new StreamWriter(fs);
-                    sw.WriteLine(now);
-                    sw.Flush();
-                    sw.Close();
-                    fs.Close();
-                    result += item.studentnum + ":success<br>";
+                    foreach (var del in BufferSubdirectory.events)
+                    {
+                        string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\" + del.Key + @"\";
+                        path = root + item.wechatid;
+                        if (System.IO.File.Exists(path))
+                        {
+                            result += del.Key + " of " + item.studentnum + ":hasexist<br>";
+                            continue;
+                        }
+                        string now;
+                        now = del.Value();
+                        fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                        sw = new StreamWriter(fs);
+                        sw.WriteLine(now);
+                        sw.Flush();
+                        sw.Close();
+                        fs.Close();
+                        result += del.Key + " of " + item.studentnum + ":success<br>";
+                    }
                     JWCHttpHelper.ClearCookies();
                 }
                 else
@@ -52,7 +56,6 @@ namespace WeChatMVC.Controllers
                     result += item.studentnum + ":" + JWCHttpHelper.ErrorMsg + "<br>";
                 }
             }
-
             return result;
         }
     }
