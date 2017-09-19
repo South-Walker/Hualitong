@@ -11,11 +11,22 @@ namespace WeChatMVC.Controllers
 {
     public class ServerController : Controller
     {
+        static string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\";
         // GET: Server
         public ActionResult Index()
         {
             return View();
         }
+        public static bool IsExist(string openid)
+        {
+            foreach (var del in BufferSubdirectory.events)
+            {
+                string path = root + del.Key + @"\" + openid;
+                if (!System.IO.File.Exists(path))
+                    return false;
+            }
+            return true;
+        } 
         public static string UpdateJWC()
         {
             string result = "";
@@ -27,18 +38,17 @@ namespace WeChatMVC.Controllers
                 Regex regex = new Regex(@"^\d+$");
                 if (regex.IsMatch(item.pwd))
                     continue;
+                if (IsExist(item.wechatid))
+                {
+                    result += item.studentnum + ":existed<br>";
+                    continue;
+                }
                 JWCHttpHelper.Login(item.studentnum, item.pwd);
                 if (JWCHttpHelper.IsLogin)
                 {
                     foreach (var del in BufferSubdirectory.events)
                     {
-                        string root = @"C:\Users\Administrator\Desktop\hualitongbuffer\" + del.Key + @"\";
-                        path = root + item.wechatid;
-                        if (System.IO.File.Exists(path))
-                        {
-                            result += del.Key + " of " + item.studentnum + ":hasexist<br>";
-                            continue;
-                        }
+                        path = root + del.Key + @"\" + item.wechatid;
                         string now;
                         now = del.Value();
                         fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);

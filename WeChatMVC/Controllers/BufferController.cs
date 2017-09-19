@@ -18,10 +18,13 @@ namespace WeChatMVC.Controllers
         public static Dictionary<string, JWCHttpHelper.CrawlerDetail<string>> events = new Dictionary<string, JWCHttpHelper.CrawlerDetail<string>>();
         public BufferSubdirectory()
         {
-            events.Add(ClassTable, JWCHttpHelper.classtablehtml);
-            events.Add(GradePoint, JWCHttpHelper.gradepoint);
-            events.Add(LargeTable, JWCHttpHelper.largetable);
-            events.Add(SmallTable, JWCHttpHelper.smalltable);
+            if (events.Count == 0)
+            {
+                events.Add(ClassTable, JWCHttpHelper.classtablehtml);
+                events.Add(GradePoint, JWCHttpHelper.gradepoint);
+                events.Add(LargeTable, JWCHttpHelper.largetable);
+                events.Add(SmallTable, JWCHttpHelper.smalltable);
+            }
         }
     }
     public class BufferController : Controller

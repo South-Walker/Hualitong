@@ -192,7 +192,7 @@ namespace WeChatMVC.Models
         public static void Login(string studentnum, string pwd)
         {
 
-            if (pwd.Length > 10) 
+            if (HttpUtility.UrlDecode(pwd).Length > 10)
             {
                 ErrorMsg = "您现在设置的教务处密码：" + HttpUtility.UrlDecode(pwd) + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
                 return;
@@ -746,6 +746,23 @@ namespace WeChatMVC.Models
                     continue;
                 list.Sort((x, y) => x.timebegin.CompareTo(y.timebegin));
             }
+        }
+        public List<List<Classob>> GetThisWeekClassTable(DateTime today)
+        {
+            List<List<Classob>> result = new List<List<Classob>>();
+            int weeknum = getweeknum(today);
+            for (int i = 0; i < ClassTable.Count; i++)
+            {
+                List<Classob> thisday = new List<Classob>();
+                for (int k = 0; k < ClassTable[i].Count; k++)
+                {
+                    Classob now = ClassTable[i][k];
+                    if (now.isToday(weeknum))
+                        thisday.Add(now);
+                }
+                result.Add(thisday);
+            }
+            return result;
         }
         private int getweeknum(DateTime today)
         {

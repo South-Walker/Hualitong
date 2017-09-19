@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BufferController.cs" />
+    <Compile Include="Controllers\DrawerController.cs" />
     <Compile Include="Controllers\JSONController.cs" />
     <Compile Include="Controllers\ServerController.cs" />
     <Compile Include="Models\DBManual.cs" />
@@ -157,6 +158,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Buffer\" />
+    <Folder Include="Views\Drawer\" />
     <Folder Include="Views\Server\" />
   </ItemGroup>
   <ItemGroup>
