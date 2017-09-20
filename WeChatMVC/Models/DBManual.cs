@@ -16,7 +16,7 @@ namespace WeChatMVC.Models
         {
             using (HualitongDBDataContext db = new HualitongDBDataContext())
             {
-                var hasexistuser = db.users.SingleOrDefault<users>(u => u.wechat_id == thiswechat_id);
+                var hasexistuser = db.users.SingleOrDefault(u => u.wechat_id == thiswechat_id);
                 if(hasexistuser == null)
                 {
                     users auser = new users
@@ -26,6 +26,7 @@ namespace WeChatMVC.Models
                     };
                     db.users.InsertOnSubmit(auser);
                     db.SubmitChanges();
+                    db.Dispose();
                 }
             }
         }
@@ -38,6 +39,11 @@ namespace WeChatMVC.Models
             using (HualitongDBDataContext db = new HualitongDBDataContext())
             {
                 var hasexistdate = db.users.Single(u => u.wechat_id == wechat_id);
+                if (hasexistdate == null)
+                {
+                    AddIntoUsers(wechat_id);
+                    hasexistdate = db.users.Single(u => u.wechat_id == wechat_id);
+                }
                 var pwdid = hasexistdate.pwds_id;
                 if (pwdid == 0)
                 {
@@ -59,6 +65,7 @@ namespace WeChatMVC.Models
                     pwdt.jw_pwd = pwd;
                 }
                 db.SubmitChanges();
+                db.Dispose();
             }
         }
         public static StudentInfo SelectUser(string wechat_id)
@@ -66,7 +73,7 @@ namespace WeChatMVC.Models
             StudentInfo result = new StudentInfo();
             using (HualitongDBDataContext db = new HualitongDBDataContext())
             {
-                var hasexistdate = db.view_wechatpwds.SingleOrDefault<view_wechatpwds>(u => u.wechat_id == wechat_id);
+                var hasexistdate = db.view_wechatpwds.SingleOrDefault(u => u.wechat_id == wechat_id);
                 if (hasexistdate == null)
                 {
                     AddIntoUsers(wechat_id);
@@ -78,6 +85,7 @@ namespace WeChatMVC.Models
                     result.studentnum = hasexistdate.student_num;
                 }
                 result.Check();
+                db.Dispose();
             }
             return result;
         }
@@ -97,6 +105,7 @@ namespace WeChatMVC.Models
                     now.studentnum = item.student_num;
                     result.Add(now);
                 }
+                db.Dispose();
             }
             return result;
         }

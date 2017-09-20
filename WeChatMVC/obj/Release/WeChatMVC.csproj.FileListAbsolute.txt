@@ -41,3 +41,4 @@ C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.SqlServer
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.xml
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\EntityFramework.SqlServer.xml
 C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\bin\zh-Hans\EntityFramework.resources.dll
+C:\Users\Administrator\Desktop\WeChatMVC\WeChatMVC\obj\Release\WeChatMVC.csprojResolveAssemblyReference.cache

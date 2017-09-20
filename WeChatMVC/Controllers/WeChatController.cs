@@ -33,19 +33,19 @@ namespace WeChatMVC.Controllers
             //a.DrawClassTable("1");
                 
             //缓存语句
-            //BufferSubdirectory a = new BufferSubdirectory(); 
+          //  BufferSubdirectory a = new BufferSubdirectory(); 
             //return ServerController.UpdateJWC();
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
-                return Request["echostr"];
+                return Request["echostr"]; 
             }
             if (IsFromTencent("961016") && Request.HttpMethod == "POST")
             {
-                try
-                {
                     #region wechatpost
                     #region hualitong
                     userrequest = new UserRequest(Request.InputStream);
+                try
+                {
                     if (userrequest.IsClick())
                     {
                         switch (userrequest.EventKey)
@@ -82,7 +82,7 @@ namespace WeChatMVC.Controllers
                         if (message == "成绩大表")
                         {
                             return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.LargeTable, userrequest.FromUserName));
-                           // return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.largetable));
+                            // return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.largetable));
                         }
                         else if (message == "绩点")
                         {
@@ -95,13 +95,27 @@ namespace WeChatMVC.Controllers
                         }
                         else if (message.Length > DBManual.xhmes.Length && message.Substring(0, DBManual.xhmes.Length) == DBManual.xhmes)
                         {
-                            DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.xhmes.Length), userrequest.FromUserName, DBManual.xhmes);
-                            return userrequest.Get_Reply("学号已修改，现在您绑定的学号为：" + message.Substring(DBManual.xhmes.Length) + "请输入jwc + 您的教务处密码来绑定，如jwc123456");
+                            try
+                            {
+                                DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.xhmes.Length), userrequest.FromUserName, DBManual.xhmes);
+                                return userrequest.Get_Reply("学号已修改，现在您绑定的学号为：" + message.Substring(DBManual.xhmes.Length) + "请输入jwc + 您的教务处密码来绑定，如jwc123456");
+                            }
+                            catch (Exception e)
+                            {
+                                UserRequest.Save_log(e.ToString());
+                            }
                         }
                         else if (message.Length > DBManual.jwcmes.Length && message.Substring(0, DBManual.jwcmes.Length) == DBManual.jwcmes)
                         {
-                            DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.jwcmes.Length), userrequest.FromUserName, DBManual.jwcmes);
-                            return userrequest.Get_Reply("教务处密码已修改，现在您绑定的教务处密码为：" + message.Substring(DBManual.jwcmes.Length) + "，为防止密码泄露，请及时删除此条消息");
+                            try
+                            {
+                                DBManual.AddIntoView_Wechatpwds(message.Substring(DBManual.jwcmes.Length), userrequest.FromUserName, DBManual.jwcmes);
+                                return userrequest.Get_Reply("教务处密码已修改，现在您绑定的教务处密码为：" + message.Substring(DBManual.jwcmes.Length) + "，为防止密码泄露，请及时删除此条消息");
+                            }
+                            catch (Exception e)
+                            {
+                                UserRequest.Save_log(e.ToString());
+                            }
                         }
                     }
                     #endregion
@@ -115,8 +129,9 @@ namespace WeChatMVC.Controllers
                     return "success";
                     #endregion
                 }
-                catch
+                catch(Exception ex)
                 {
+                    UserRequest.Save_log(ex.ToString());
                     return "success";
                 }
             }
