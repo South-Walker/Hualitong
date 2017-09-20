@@ -29,12 +29,12 @@ namespace WeChatMVC.Controllers
             //    return BufferController.Select("classtablehtml", "ob-f1w_bvXQYzEKAfYPPuOB_Q3zo");
             // return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
             //return DBManual.SelectFromJwc("ob-f1w7IM2U3ma-EcPrpmesCnm8o", JWCHttpHelper.largetable);
-            //ClassTableDrawer a = new ClassTableDrawer();
-            //a.DrawClassTable("1");
+            ClassTableDrawer a = new ClassTableDrawer();
+            a.DrawClassTable("1");
                 
             //缓存语句
           //  BufferSubdirectory a = new BufferSubdirectory(); 
-            //return ServerController.UpdateJWC();
+           // return ServerController.UpdateJWC();
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"]; 

@@ -42,21 +42,22 @@ namespace WeChatMVC.Controllers
         static string clogo = "©华理通2017";
         public Bitmap ClassTableImage = null;
         private Graphics g = null;
+        private Pen mypen = new Pen(Color.FromArgb(208, 208, 208), 2);
         private Font biggerfont = new Font("方正卡通简体", 12, FontStyle.Regular, GraphicsUnit.Point);
         private Font smallerfont = new Font("方正卡通简体", 20, FontStyle.Bold, GraphicsUnit.Point);
         public void DrawClassTable(string openid)
         {
-            drawingbase();
-            drawclasses(openid);
-        }
-        private void drawingbase()
-        {
             ClassTableImage = new Bitmap(width, height);
             g = Graphics.FromImage(ClassTableImage);
             g.Clear(background);
-            Pen mypen = new Pen(Color.Black, 2);
 
+            drawingbase();
+            drawclasses(openid);
 
+            ClassTableImage.Save(@"C:\Users\Administrator\Desktop\test\1.png", ImageFormat.Png);
+        }
+        private void drawingbase()
+        {
             //     g.FillRectangle(Brushes.Black, new Rectangle(0, classtableheight, width, height));
             //水印
             //      Bitmap shuiying = (Bitmap)Image.FromFile(@"C:\Users\Administrator\Desktop\test\hualitongcolorful.png");
@@ -165,14 +166,13 @@ namespace WeChatMVC.Controllers
                 List<Classob> now = thisweek[i];
                 for (int k = 0; k < now.Count; k++)
                 {
-                    DrawAClass(g, now[k]);
+                    drawaclass(g, now[k]);
                 }
             }
             //clogo
             g.DrawString(clogo, biggerfont, Brushes.Black, new Rectangle(0, classtableheight, classtablewidth, clogheight), rightStringFormat);
+            
 
-
-            ClassTableImage.Save(@"C:\Users\Administrator\Desktop\test\1.png", ImageFormat.Png);
         }
         private ClassTableob getclasstable()
         {
@@ -182,7 +182,7 @@ namespace WeChatMVC.Controllers
             ClassTableob table = new ClassTableob(html, new DateTime(2017, 9, 11));
             return table;
         }
-        private void DrawAClass(Graphics g, Classob aclass)
+        private void drawaclass(Graphics g, Classob aclass)
         {
             Pen mypen = new Pen(Color.Black, 2);
             Rectangle rect = getclassrect(aclass);
@@ -193,9 +193,10 @@ namespace WeChatMVC.Controllers
             centerStringFormat.Alignment = StringAlignment.Center;
             centerStringFormat.LineAlignment = StringAlignment.Center;
 
-
+            g.FillRectangle(new SolidBrush(aclass.colorintable), rect);
             Font font = new Font("方正卡通简体", 12, FontStyle.Bold, GraphicsUnit.Point);
             g.DrawString(aclass.classname + "\r\n" + aclass.room, font, Brushes.Black, rect, centerStringFormat);
+            g.DrawRectangle(mypen, rect);
         }
         private Rectangle getclassrect(Classob aclass)
         {
@@ -223,6 +224,16 @@ namespace WeChatMVC.Controllers
             initlist();
             randomcolors(seed);
         }
+        public RandomColor(string studentnum)
+        {
+            int total = 0;
+            foreach (var item in studentnum) 
+            {
+                total += item;
+            }
+            initlist();
+            randomcolors(total);
+        }
         private void randomcolors(int seed)
         {
             Random r = new Random(seed);
@@ -242,7 +253,6 @@ namespace WeChatMVC.Controllers
             Colors.Add(Color.FromArgb(255, 0, 255));
             Colors.Add(Color.FromArgb(153, 50, 204));
             Colors.Add(Color.FromArgb(123, 104, 238));
-            Colors.Add(Color.FromArgb(0, 0, 255));
             Colors.Add(Color.FromArgb(65, 105, 225));
             Colors.Add(Color.FromArgb(100, 149, 237));
             Colors.Add(Color.FromArgb(30, 144, 255));

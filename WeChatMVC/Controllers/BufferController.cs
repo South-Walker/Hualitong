@@ -39,14 +39,30 @@ namespace WeChatMVC.Controllers
         {
             string result = "";
             string path = root + detail + "/" + openid;
-            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-            StreamReader sr = new StreamReader(fs);
-            result = sr.ReadToEnd();
-            if (detail != BufferSubdirectory.ClassTable)
-                return result;
+            if (System.IO.File.Exists(path))
+            {
+                FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                StreamReader sr = new StreamReader(fs);
+                result = sr.ReadToEnd();
+                if (detail != BufferSubdirectory.ClassTable)
+                    return result;
+                else
+                {
+                    return JWCHttpHelper.ClassTableFromHtml<string>(result);
+                }
+            }
             else
             {
-                return JWCHttpHelper.ClassTableFromHtml<string>(result); 
+                StudentInfo stif = DBManual.SelectUser(openid);
+                stif.Check();
+                if(stif.IsSuccess)
+                {
+                    return "请确认您的密码:" + HttpUtility.UrlDecode(stif.pwd) + "正确，我们将在24小时内为您开通功能。";
+                }
+                else
+                {
+                    return stif.errormessage;
+                }
             }
         }
     }

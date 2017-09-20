@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
 using WeChatMVC.Models;
+using WeChatMVC.Controllers;
 using System.Web.Mvc;
 using System.Web;
 
@@ -191,7 +192,6 @@ namespace WeChatMVC.Models
         }
         public static void Login(string studentnum, string pwd)
         {
-
             if (HttpUtility.UrlDecode(pwd).Length > 10)
             {
                 ErrorMsg = "您现在设置的教务处密码：" + HttpUtility.UrlDecode(pwd) + "，不正确。请重新输入jwc+您的教务处密码来解锁此功能，如jwc123456";
@@ -686,8 +686,9 @@ namespace WeChatMVC.Models
     {
         public List<List<Classob>> ClassTable;
         public DateTime TermBegin;
-        public ClassTableob(string html,DateTime begin)
+        public ClassTableob(string html,DateTime begin,string studentnum = "10150111")
         {
+            RandomColor rc = new RandomColor(studentnum);
             ClassTable = new List<List<Classob>>();
             TermBegin = begin;
             if (ClassTable.Count == 0)
@@ -706,12 +707,14 @@ namespace WeChatMVC.Models
             string classname = "";
             string date = "";
             string room = "";
+            Color thiscolor = rc.Next();
             for (int trnum = 1; trnum < mc.Count; trnum++)
             {
                 m = mc[trnum];
                 string now = m.Value;
                 if (Regex.IsMatch(now, "tr height=24"))
                 {
+                    thiscolor = rc.Next();
                     regex = new Regex("<td[^>]*rowspan=(?<howmanytimes>\\d+)[^>]*>(?<class>[^<]*)</td><td[^>]*>\\d+</td><td[^>]*>(?<teacher>[^<]*)</td><td[^>]*>(?<date>[^<]*)</td><td [^>]*>(?<room>[^<]*)</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td><td[^>]*>[^<]*</td></tr>");
                     m = regex.Match(now);
                     GroupCollection gc = m.Groups;
@@ -719,7 +722,7 @@ namespace WeChatMVC.Models
                     classname = gc["class"].Value;
                     date = gc["date"].Value;
                     room = gc["room"].Value;
-                    Classob nowclass = new Classob(teacher, classname, date, room);
+                    Classob nowclass = new Classob(teacher, classname, date, room, thiscolor);
                     ClassTable[nowclass.weekcode].Add(nowclass);
                 }
                 else
@@ -732,7 +735,7 @@ namespace WeChatMVC.Models
                     {
                         room = gc["room"].Value;
                     }
-                    Classob nowclass = new Classob(teacher, classname, date, room);
+                    Classob nowclass = new Classob(teacher, classname, date, room, thiscolor);
                     ClassTable[nowclass.weekcode].Add(nowclass);
                 }
             }
@@ -829,8 +832,10 @@ namespace WeChatMVC.Models
         public string quanorsuang;
         public bool isshuang;
         public bool isdan;
-        public Classob(string thisteacher, string thisclassname, string thisdate, string thisroom)
+        public Color colorintable;
+        public Classob(string thisteacher, string thisclassname, string thisdate, string thisroom , Color thiscolor)
         {
+            colorintable = thiscolor;
             isdan = true;isshuang = true;
             teacher = thisteacher;
             classname = thisclassname;
