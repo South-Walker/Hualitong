@@ -35,10 +35,25 @@ namespace WeChatMVC.Controllers
         {
             return View();
         }
-        public static string Select(string detail, string openid)
+        public static string SelectClassTableImg(UserRequest userrequest)
+        {
+            string path = root + BufferSubdirectory.ClassTable + "/" + userrequest.FromUserName;
+            if (System.IO.File.Exists(path))
+            {
+                ClassTableDrawer drawer = new ClassTableDrawer();
+                Stream stream = drawer.DrawClassTableInStream(userrequest.FromUserName);
+                WeChatHttpHelper.GetToken();
+                return userrequest.Get_Img(WeChatHttpHelper.GetMediaID(stream));
+            }
+            else
+            {
+                return userrequest.Get_Reply(isnotexist(userrequest.FromUserName));
+            }
+        }
+        public static string Select(string detail, UserRequest userrequest)
         {
             string result = "";
-            string path = root + detail + "/" + openid;
+            string path = root + detail + "/" + userrequest.FromUserName;
             if (System.IO.File.Exists(path))
             {
                 FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
@@ -53,16 +68,20 @@ namespace WeChatMVC.Controllers
             }
             else
             {
-                StudentInfo stif = DBManual.SelectUser(openid);
-                stif.Check();
-                if(stif.IsSuccess)
-                {
-                    return "请确认您的密码:" + HttpUtility.UrlDecode(stif.pwd) + "正确，我们将在24小时内为您开通功能。";
-                }
-                else
-                {
-                    return stif.errormessage;
-                }
+                return userrequest.Get_Reply(isnotexist(userrequest.FromUserName));
+            }
+        }
+        private static string isnotexist(string openid)
+        {
+            StudentInfo studentinfo = DBManual.SelectUser(openid);
+            studentinfo.Check();
+            if (studentinfo.IsSuccess)
+            {
+                return "请确认您的密码:" + HttpUtility.UrlDecode(studentinfo.pwd) + "正确，我们将在24小时内为您开通功能。";
+            }
+            else
+            {
+                return studentinfo.errormessage;
             }
         }
     }

@@ -29,23 +29,23 @@ namespace WeChatMVC.Controllers
             //    return BufferController.Select("classtablehtml", "ob-f1w_bvXQYzEKAfYPPuOB_Q3zo");
             // return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
             //return DBManual.SelectFromJwc("ob-f1w7IM2U3ma-EcPrpmesCnm8o", JWCHttpHelper.largetable);
-            ClassTableDrawer a = new ClassTableDrawer();
-            a.DrawClassTable("1");
-                
+            // ClassTableDrawer a = new ClassTableDrawer();
+            // a.DrawClassTable("ob-f1w7IM2U3ma-EcPrpmesCnm8o", DateTime.Now, @"C:\Users\Administrator\Desktop\test\1.png");
+            //  a.DrawAll("ob-f1w_wZ8xCH8-1jhDJoAfPU3nU", @"C:\Users\Administrator\Desktop\test\");
             //缓存语句
-          //  BufferSubdirectory a = new BufferSubdirectory(); 
-           // return ServerController.UpdateJWC();
+            //BufferSubdirectory a = new BufferSubdirectory(); 
+            //return ServerController.UpdateJWC();
             if (IsFromTencent("961016") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"]; 
             }
-            if (IsFromTencent("961016") && Request.HttpMethod == "POST")
+            if (IsFromTencent("961016") && Request.HttpMethod == "POST") 
             {
+                try
+                {
                     #region wechatpost
                     #region hualitong
                     userrequest = new UserRequest(Request.InputStream);
-                try
-                {
                     if (userrequest.IsClick())
                     {
                         switch (userrequest.EventKey)
@@ -57,15 +57,15 @@ namespace WeChatMVC.Controllers
                             case "hualitong_changestudentnum":
                                 return userrequest.Get_Reply(UserRequest.hualitong_changestudentnum);
                             case "hualitong_grade":
-                                return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.SmallTable, userrequest.FromUserName));
+                                return BufferController.Select(BufferSubdirectory.SmallTable, userrequest);
                             //    return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.smalltable));
                             case "hualitong_classtable":
-                                return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.ClassTable, userrequest.FromUserName));
-                            //   return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.classtable));
+                                return BufferController.Select(BufferSubdirectory.ClassTable, userrequest);
+                                //   return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.classtable));
                             case "hualitong_pj":
                                 return userrequest.Get_Reply("现在还没到评教时间哦～");
                             case "hualitong_more":
-                                return userrequest.Get_Reply("查询成绩大表请回复：成绩大表\n查询绩点请回复：绩点\n查询完整课表请回复：完整课表");
+                                return userrequest.Get_Reply("查询成绩大表请回复：成绩大表\n查询绩点请回复：绩点\n查询本周课表请回复：本周课表");
                             default:
                                 return userrequest.Get_Reply("功能还在开发中，敬请期待~");
                         }
@@ -81,17 +81,17 @@ namespace WeChatMVC.Controllers
 
                         if (message == "成绩大表")
                         {
-                            return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.LargeTable, userrequest.FromUserName));
+                            return BufferController.Select(BufferSubdirectory.LargeTable, userrequest);
                             // return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.largetable));
                         }
                         else if (message == "绩点")
                         {
-                            return userrequest.Get_Reply(BufferController.Select(BufferSubdirectory.GradePoint, userrequest.FromUserName));
+                            return BufferController.Select(BufferSubdirectory.GradePoint, userrequest);
                             //       return userrequest.Get_Reply(DBManual.SelectFromJwc(userrequest.FromUserName, JWCHttpHelper.gradepoint));
                         }
-                        else if (message == "完整课表")
+                        else if (message == "本周课表")
                         {
-                            return userrequest.Get_Reply("内部测试中，即将开放!");
+                            return BufferController.SelectClassTableImg(userrequest);
                         }
                         else if (message.Length > DBManual.xhmes.Length && message.Substring(0, DBManual.xhmes.Length) == DBManual.xhmes)
                         {
@@ -129,7 +129,7 @@ namespace WeChatMVC.Controllers
                     return "success";
                     #endregion
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     UserRequest.Save_log(ex.ToString());
                     return "success";

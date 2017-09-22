@@ -13,6 +13,10 @@ namespace WeChatMVC.Models
         protected HttpWebRequest request;
         protected HttpWebResponse response;
         string html = string.Empty;
+        public MyHttpHelper()
+        {
+
+        }
         public MyHttpHelper(string url)
         {
             request = (HttpWebRequest)WebRequest.Create(url);
@@ -32,6 +36,11 @@ namespace WeChatMVC.Models
         {
             request.Method = "POST";
             byte[] bytes = Encoding.UTF8.GetBytes(postcontent);
+            HttpPost(bytes);
+        }
+        public void HttpPost(byte[] bytes)
+        {
+            request.Method = "POST";
             request.ContentLength = bytes.Length;
             Stream stream = request.GetRequestStream();
             stream.Write(bytes, 0, bytes.Length);

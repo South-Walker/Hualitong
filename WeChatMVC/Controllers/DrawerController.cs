@@ -21,6 +21,7 @@ namespace WeChatMVC.Controllers
     }
     public class ClassTableDrawer
     {
+        public DateTime now;
         static string[] dates = new string[] { "7", "8", "9", "10", "11", "12", "13" };
         static string[] nums = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
         static string[] weekday = new string[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
@@ -45,25 +46,58 @@ namespace WeChatMVC.Controllers
         private Pen mypen = new Pen(Color.FromArgb(208, 208, 208), 2);
         private Font biggerfont = new Font("方正卡通简体", 12, FontStyle.Regular, GraphicsUnit.Point);
         private Font smallerfont = new Font("方正卡通简体", 20, FontStyle.Bold, GraphicsUnit.Point);
-        public void DrawClassTable(string openid)
+        public ClassTableDrawer()
+        {
+            now = DateTime.Now;
+            if (now.DayOfWeek == 0)
+                now = now.AddDays(1);
+        }
+        public ClassTableDrawer(DateTime nowdate)
+        {
+            now = nowdate;
+            if (now.DayOfWeek == 0)
+                now = now.AddDays(1);
+        }
+        public void DrawClassTableAndSave(string openid, string path)
         {
             ClassTableImage = new Bitmap(width, height);
             g = Graphics.FromImage(ClassTableImage);
             g.Clear(background);
-
+            initdate();
             drawingbase();
             drawclasses(openid);
 
-            ClassTableImage.Save(@"C:\Users\Administrator\Desktop\test\1.png", ImageFormat.Png);
+            ClassTableImage.Save(path, ImageFormat.Png);
+        }
+        public Stream DrawClassTableInStream(string openid)
+        {
+            ClassTableImage = new Bitmap(width, height);
+            g = Graphics.FromImage(ClassTableImage);
+            g.Clear(background);
+            initdate();
+            drawingbase();
+            drawclasses(openid);
+            MemoryStream stream = new MemoryStream();
+            ClassTableImage.Save(stream, ImageFormat.Png);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+        public void DrawAll(string openid, string root)
+        {
+            DateTime begin = new DateTime(2017, 9, 11);
+            now = begin;
+            for (int i = 1; i < 20; i++)
+            {
+                DrawClassTableAndSave(openid, root + i.ToString() + ".png");
+                AddDays(7);
+            }
+        }
+        public void AddDays(double i)
+        {
+            now = now.AddDays(i);
         }
         private void drawingbase()
         {
-            //     g.FillRectangle(Brushes.Black, new Rectangle(0, classtableheight, width, height));
-            //水印
-            //      Bitmap shuiying = (Bitmap)Image.FromFile(@"C:\Users\Administrator\Desktop\test\hualitongcolorful.png");
-            //    shuiying.MakeTransparent(background);
-            //  g.DrawImage(shuiying, new Point(0, 0));
-
             //横线
             g.DrawLine(mypen, 0, 0, classtablewidth, 0);
             g.DrawLine(mypen, 0, classtableheight, classtablewidth, classtableheight);
@@ -101,8 +135,6 @@ namespace WeChatMVC.Controllers
             g.DrawLine(mypen, daywidth, weekdayheight + 4 * classheight + dinnertimeheight, daywidth, weekdayheight + 8 * classheight + dinnertimeheight);
             g.DrawLine(mypen, daywidth, weekdayheight + 8 * classheight + dinnertimeheight * 2, daywidth, classtableheight);
 
-            //斜线
-            g.DrawLine(mypen, 0, 0, weekdaywidth, weekdayheight);
 
             StringFormat centerStringFormat = new StringFormat();
             centerStringFormat.Alignment = StringAlignment.Center;
@@ -115,7 +147,8 @@ namespace WeChatMVC.Controllers
             StringFormat rightStringFormat = new StringFormat();
             rightStringFormat.Alignment = StringAlignment.Far;
             rightStringFormat.LineAlignment = StringAlignment.Far;
-
+            //月份
+            g.DrawString(DateTime.Now.Month + "月", smallerfont, Brushes.Black, new Rectangle(0, weekdayheight / 3, weekdaywidth, weekdayheight * 2 / 3), centerStringFormat);
             //星期几
             for (int i = 0; i < weekday.Length; i++)
             {
@@ -159,7 +192,7 @@ namespace WeChatMVC.Controllers
             rightStringFormat.Alignment = StringAlignment.Far;
             rightStringFormat.LineAlignment = StringAlignment.Far;
 
-            List<List<Classob>> thisweek = getclasstable().GetThisWeekClassTable(DateTime.Now);
+            List<List<Classob>> thisweek = getclasstable(openid).GetThisWeekClassTable(now);
 
             for (int i = 0; i < thisweek.Count; i++)
             {
@@ -171,12 +204,10 @@ namespace WeChatMVC.Controllers
             }
             //clogo
             g.DrawString(clogo, biggerfont, Brushes.Black, new Rectangle(0, classtableheight, classtablewidth, clogheight), rightStringFormat);
-            
-
         }
-        private ClassTableob getclasstable()
+        private ClassTableob getclasstable(string openid)
         {
-            FileStream fs = new FileStream(@"C:\Users\Administrator\Desktop\test\ob-f1w4TU3z-1s90Bb5akG2wBR1g", FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream(@"C:\Users\Administrator\Desktop\hualitongbuffer\classtablehtml\" + openid, FileMode.Open, FileAccess.Read);
             StreamReader sr = new StreamReader(fs);
             string html = sr.ReadToEnd();
             ClassTableob table = new ClassTableob(html, new DateTime(2017, 9, 11));
@@ -213,6 +244,16 @@ namespace WeChatMVC.Controllers
             else
                 y = weekdayheight + dinnertimeheight * 2 + (begin - 1) * classheight;
             return new Rectangle(x, y, classwidth, length);
+        }
+        private void initdate()
+        {
+            int weekdaynow = (int)now.DayOfWeek;
+            now = now.AddDays(weekdaynow * -1);
+            for (int i = 0; i < dates.Length; i++)
+            {
+                dates[i] = now.Day.ToString();
+                now = now.AddDays(1);
+            }
         }
     }
     public class RandomColor

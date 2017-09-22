@@ -5,6 +5,8 @@ using System.Web.UI.WebControls;
 using System.IO;
 using System.Xml;
 using System.Data;
+using System.Text.RegularExpressions;
+using WeChatMVC.Controllers;
 
 namespace WeChatMVC.Models
 {
@@ -35,7 +37,6 @@ namespace WeChatMVC.Models
             XmlElement xe = doc.DocumentElement;
             fillclass(xe);
         }
-
         public static void Save_log(string xml)
         {
             FileStream fs = new FileStream(@"C:\Users\Administrator\Desktop\wechatlog.txt", FileMode.Append, FileAccess.Write);
@@ -178,6 +179,16 @@ namespace WeChatMVC.Models
             "]]></Content></xml>";
             return reply;
         }//返回最终的xml
+        public string Get_Img(string mediaid)
+        {
+            string reply = "<xml><ToUserName><![CDATA[" + FromUserName +
+                "]]></ToUserName><FromUserName><![CDATA[" + ToUserName +
+            "]]></FromUserName><CreateTime>" + ConvertDateTimeInt(DateTime.Now) +
+            "</CreateTime><MsgType><![CDATA[" + "image" +
+            "]]></MsgType><Image><MediaId><![CDATA[" + mediaid +
+            "]]></MediaId></Image></xml>";
+            return reply;
+        }
         public static int ConvertDateTimeInt(DateTime time)
         {
             DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
