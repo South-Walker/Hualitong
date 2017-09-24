@@ -60,10 +60,10 @@ namespace WeChatMVC.Controllers
                 StreamReader sr = new StreamReader(fs);
                 result = sr.ReadToEnd();
                 if (detail != BufferSubdirectory.ClassTable)
-                    return result;
+                    return userrequest.Get_Reply(result);
                 else
                 {
-                    return JWCHttpHelper.ClassTableFromHtml<string>(result);
+                    return userrequest.Get_Reply(JWCHttpHelper.ClassTableFromHtml<string>(result));
                 }
             }
             else
