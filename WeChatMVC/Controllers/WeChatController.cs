@@ -29,17 +29,16 @@ namespace WeChatMVC.Controllers
             //    return BufferController.Select("classtablehtml", "ob-f1w_bvXQYzEKAfYPPuOB_Q3zo");
             // return APIController.CrawlerFromJwc("10150111", "162133@a", JWCHttpHelper.largetable);
             //return DBManual.SelectFromJwc("ob-f1w7IM2U3ma-EcPrpmesCnm8o", JWCHttpHelper.largetable);
-            // ClassTableDrawer a = new ClassTableDrawer();
-            // a.DrawClassTable("ob-f1w7IM2U3ma-EcPrpmesCnm8o", DateTime.Now, @"C:\Users\Administrator\Desktop\test\1.png");
-            //  a.DrawAll("ob-f1w_wZ8xCH8-1jhDJoAfPU3nU", @"C:\Users\Administrator\Desktop\test\");
+           //  ClassTableDrawer a = new ClassTableDrawer();
+             // a.DrawAll("ob-f1w_wZ8xCH8-1jhDJoAfPU3nU", @"C:\Users\Administrator\Desktop\test\");
             //缓存语句
-            //BufferSubdirectory a = new BufferSubdirectory(); 
-            //return ServerController.UpdateJWC();
-            if (IsFromTencent("961016") && Request.HttpMethod == "GET")
+         //   BufferSubdirectory a = new BufferSubdirectory(); 
+         //   return ServerController.UpdateJWC();
+            if (IsFromTencent("961016728") && Request.HttpMethod == "GET")
             {
                 return Request["echostr"]; 
             }
-            if (IsFromTencent("961016") && Request.HttpMethod == "POST") 
+            if (IsFromTencent("961016728") && Request.HttpMethod == "POST") 
             {
                 try
                 {

@@ -11,8 +11,8 @@ namespace WeChatMVC.Models
 {
     public class WeChatHttpHelper:MyHttpHelper
     {
-        private const string appid = "wx9e64b20cf4937a98";
-        private const string appsecert = "7d7d04064acdf0e0f5e51c7a3e0240ea";
+        private const string appid = "wxa5ba3f2e4ce5a99e";
+        private const string appsecert = "110d84713a52666c812ed40b15fdc298";
         public static string Token = "";
         public const string TokenAPI = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={0}&secret={1}";
         public const string MediaUploadAPI = "http://api.weixin.qq.com/cgi-bin/media/upload?access_token={0}&type={1}";

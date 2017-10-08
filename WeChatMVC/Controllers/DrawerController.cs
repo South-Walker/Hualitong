@@ -40,7 +40,8 @@ namespace WeChatMVC.Controllers
         static int width = 1280 / 5 * 3;
         static int clogheight = 30;
         static int height = classtableheight + clogheight;
-        static string clogo = "©华理通2017";
+        delegate float FunctionY(float x);
+        static string clogo = "©肖南行South-Walker";
         public Bitmap ClassTableImage = null;
         private Graphics g = null;
         private Pen mypen = new Pen(Color.FromArgb(208, 208, 208), 2);
@@ -95,6 +96,45 @@ namespace WeChatMVC.Controllers
         public void AddDays(double i)
         {
             now = now.AddDays(i);
+        }
+        private void fillsmoothclassrectangle(Graphics g, RectangleF r, Color color)
+        {
+            float beginx1 = r.X;
+            float beginx2 = r.X + r.Width - r.Width / 3;
+            float endx1 = r.X + r.Width / 3;
+            float endx2 = r.X + r.Width;
+
+            fillbetweenfunctions(x => { return r.Y + r.Width / 3f - (float)Math.Sqrt(r.Width * r.Width / 9f - (x - r.X - r.Width / 3f) * (x - r.X - r.Width / 3f)); },
+                x => { return r.Y + r.Height - r.Width / 3f + (float)Math.Sqrt(r.Width * r.Width / 9f - (x - r.X - r.Width / 3f) * (x - r.X - r.Width / 3f)); },
+                g, beginx1, endx1, color);
+            fillbetweenfunctions(x => { return r.Y; },
+                x => { return r.Y + r.Height; },
+                g, endx1, beginx2, color);
+            fillbetweenfunctions(x => { return r.Y + r.Width / 3f - (float)Math.Sqrt(r.Width * r.Width / 9f - (x - r.X - r.Width * 2 / 3f) * (x - r.X - r.Width * 2 / 3f)); },
+                x => { return r.Y + r.Height - r.Width / 3f + (float)Math.Sqrt(r.Width * r.Width / 9f - (x - r.X - r.Width * 2 / 3f) * (x - r.X - r.Width * 2 / 3f)); },
+                g, beginx2, endx2, color);
+        }
+        private void fillbetweenfunctions(FunctionY funa, FunctionY funb, Graphics g, float beginx, float endx, Color color)
+        {
+            float y1, y2, y3, y4;
+            for (float i = beginx; i < endx; i += 0.5f)
+            {
+                y1 = funa(i);
+                y2 = funa(i + 1);
+                y3 = funb(i);
+                y4 = funb(i + 1);
+                g.DrawLine(new Pen(color), i, y1, i, y3);
+            }
+        }
+        private void drawfunction(FunctionY function, Graphics g, float beginx, float endx)
+        {
+            float y1, y2;
+            for (float i = beginx; i < endx; i += 0.5f)
+            {
+                y1 = function(i);
+                y2 = function(i + 1);
+                g.DrawLine(Pens.Black, i, y1, i + 1, y2);
+            }
         }
         private void drawingbase()
         {
@@ -217,17 +257,17 @@ namespace WeChatMVC.Controllers
         {
             Pen mypen = new Pen(Color.Black, 2);
             Rectangle rect = getclassrect(aclass);
-            g.FillRectangle(Brushes.White, rect);
-            g.DrawRectangle(mypen, rect);
+        //    g.FillRectangle(Brushes.White, rect);//直角时涂白使用
 
             StringFormat centerStringFormat = new StringFormat();
             centerStringFormat.Alignment = StringAlignment.Center;
             centerStringFormat.LineAlignment = StringAlignment.Center;
 
-            g.FillRectangle(new SolidBrush(aclass.colorintable), rect);
+            //  g.FillRectangle(new SolidBrush(aclass.colorintable), rect);//这个不是圆角
+            fillsmoothclassrectangle(g, rect, aclass.colorintable);
             Font font = new Font("方正卡通简体", 12, FontStyle.Bold, GraphicsUnit.Point);
             g.DrawString(aclass.classname + "\r\n" + aclass.room, font, Brushes.Black, rect, centerStringFormat);
-            g.DrawRectangle(mypen, rect);
+         //   g.DrawRectangle(mypen, rect);//直角时描边使用
         }
         private Rectangle getclassrect(Classob aclass)
         {
