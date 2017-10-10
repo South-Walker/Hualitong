@@ -21,7 +21,6 @@ namespace WeChatMVC.Controllers
     }
     public static class ExpandGraphics
     {
-        public delegate float FunctionY(float x);
         public static void FillSmoothClassRectangle(this Graphics g, RectangleF r, Color color)
         {
             //这几个常量可以进一步封装，本质上是四个半圆，半径相同，理论上可以只用五个变量（4个圆心，1个半径）
@@ -43,7 +42,7 @@ namespace WeChatMVC.Controllers
                 x => { return r.Y + r.Height - r.Width / 3f + (float)Math.Sqrt(r.Width * r.Width / 9f - (x - r.X - r.Width * 2 / 3f) * (x - r.X - r.Width * 2 / 3f)); },
                 beginx2, endx2, color);
         }
-        public static void FillBetweenFunctions(this Graphics g, FunctionY funa, FunctionY funb,  float beginx, float endx, Color color)
+        public static void FillBetweenFunctions(this Graphics g, Func<float, float> funa, Func<float, float> funb, float beginx, float endx, Color color)
         {
             float y1, y2, y3, y4;
             for (float i = beginx; i < endx; i += 0.5f)
@@ -55,7 +54,7 @@ namespace WeChatMVC.Controllers
                 g.DrawLine(new Pen(color), i, y1, i, y3);
             }
         }
-        public static void DrawFunction(this Graphics g, FunctionY function, float beginx, float endx)
+        public static void DrawFunction(this Graphics g, Func<float, float> function, float beginx, float endx)
         {
             float y1, y2;
             for (float i = beginx; i < endx; i += 0.5f)
@@ -243,10 +242,10 @@ namespace WeChatMVC.Controllers
 
             for (int i = 0; i < thisweek.Count; i++)
             {
-                List<Classob> now = thisweek[i];
-                for (int k = 0; k < now.Count; k++)
+                List<Classob> nowlist = thisweek[i];
+                for (int k = 0; k < nowlist.Count; k++)
                 {
-                    drawaclass(g, now[k]);
+                    drawaclass(g, nowlist[k]);
                 }
             }
             //clogo
@@ -295,11 +294,11 @@ namespace WeChatMVC.Controllers
         private void initdate()
         {
             int weekdaynow = (int)now.DayOfWeek;
-            now = now.AddDays(weekdaynow * -1);
+            DateTime beginofweek = now.AddDays(weekdaynow * -1);
             for (int i = 0; i < dates.Length; i++)
             {
-                dates[i] = now.Day.ToString();
-                now = now.AddDays(1);
+                dates[i] = beginofweek.Day.ToString();
+                beginofweek = beginofweek.AddDays(1);
             }
         }
     }
