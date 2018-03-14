@@ -16,3 +16,10 @@ C:\Users\Administrator\Desktop\WeChatMVC\wechatpost\wechatpost\obj\Debug\wechatp
 C:\Users\Administrator\Desktop\WeChatMVC\wechatpost\wechatpost\bin\Debug\wechatpost.exe
 C:\Users\Administrator\Desktop\WeChatMVC\wechatpost\wechatpost\bin\Debug\wechatpost.pdb
 C:\Users\Administrator\Desktop\WeChatMVC\wechatpost\wechatpost\obj\Debug\wechatpost.csprojResolveAssemblyReference.cache
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\obj\Debug\wechatpost.exe
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\obj\Debug\wechatpost.pdb
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\bin\Debug\wechatpost.exe.config
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\bin\Debug\wechatpost.exe
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\bin\Debug\wechatpost.pdb
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\obj\Debug\wechatpost.csprojResolveAssemblyReference.cache
+C:\Users\lenovo\Desktop\Hualitong\wechatpost\wechatpost\obj\Debug\wechatpost.csproj.CoreCompileInputs.cache
