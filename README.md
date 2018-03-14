@@ -9,7 +9,7 @@
 
 ### 逻辑框图
 
-![](https://raw.github.com/South-Walker/Elearn/master/doc/hualitong.png)
+![](https://raw.github.com/South-Walker/Hualitong/master/doc/hualitong.png)
 
 ### 具体功能
 
@@ -25,9 +25,9 @@
 
 ### 效果图
 由于年深日久，实际运行图难以获得，以下图片是在测试阶段在私人公众号上留存的记录<br>
-![](https://raw.github.com/South-Walker/Elearn/master/doc/Grade.png)
-![](https://raw.github.com/South-Walker/Elearn/master/doc/Classtable.png)
-![](https://raw.github.com/South-Walker/Elearn/master/doc/bigClasstable.png)
+![](https://raw.github.com/South-Walker/Hualitong/master/doc/Grade.png)
+![](https://raw.github.com/South-Walker/Hualitong/master/doc/Classtable.png)
+![](https://raw.github.com/South-Walker/Hualitong/master/doc/bigClasstable.png)
 
 ### 日志
 不存在的
